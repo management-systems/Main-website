@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: managementsystems
+    restart: always
+    ports:
+      - "9000:9000"
+    volumes:
+      - app-data:/app/backend/data
+    environment:
+      - NODE_ENV=production
+      - PORT=9000
+      - SMTP_PASS=${SMTP_PASS}
+
+volumes:
+  app-data:
