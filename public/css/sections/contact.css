@@ -234,16 +234,20 @@
 }
 
 .popup-whatsapp {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   margin-top: 16px;
-  font-size: 0.8rem;
-  color: var(--color-accent);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #25D366;
   text-decoration: none;
   transition: var(--transition);
 }
 
 .popup-whatsapp:hover {
-  text-decoration: underline;
+  opacity: 0.8;
 }
 
 .cta-popup-close {
