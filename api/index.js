@@ -13,6 +13,9 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Serve static files
+app.use(express.static(path.join(__dirname, '../frontend')));
+
 // MongoDB connection
 let db;
 async function getDb() {
@@ -218,6 +221,11 @@ app.put('/admin/api/discounts', auth, async (req, res) => {
 app.get('/admin/logout', (req, res) => {
   res.clearCookie('token');
   res.redirect('/admin');
+});
+
+// Catch-all: serve index.html
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/index.html'));
 });
 
 module.exports = app;
