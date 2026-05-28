@@ -4,10 +4,6 @@
     {
       "src": "api/index.js",
       "use": "@vercel/node"
-    },
-    {
-      "src": "frontend/**",
-      "use": "@vercel/static"
     }
   ],
   "routes": [
@@ -19,11 +15,9 @@
     { "src": "/admin", "dest": "/api/index.js" },
     { "src": "/css/(.*)", "dest": "/frontend/css/$1" },
     { "src": "/js/(.*)", "dest": "/frontend/js/$1" },
-    { "src": "/admin/login.html", "dest": "/frontend/admin/login.html" },
-    { "src": "/admin/dashboard.html", "dest": "/frontend/admin/dashboard.html" },
     { "src": "/logo_transparent.svg", "dest": "/frontend/logo_transparent.svg" },
     { "src": "/Generated_image.png", "dest": "/frontend/Generated_image.png" },
-    { "src": "/(.*\\.(ico|png|jpg|svg|webp))$", "dest": "/frontend/$1" },
+    { "src": "/(.*\\.(ico|png|jpg|svg|webp|css|js))$", "dest": "/frontend/$1" },
     { "src": "/(.*)", "dest": "/frontend/index.html" }
   ]
 }
