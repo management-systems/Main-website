@@ -126,3 +126,43 @@ img { max-width: 100%; display: block; }
   .section { padding: 60px 0; }
   .container { padding: 0 16px; }
 }
+
+/* Light mode global overrides */
+[data-theme="light"] .navbar.scrolled {
+  box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+}
+
+[data-theme="light"] .nav-logo-icon {
+  mix-blend-mode: normal;
+}
+
+[data-theme="light"] .service-card,
+[data-theme="light"] .portfolio-card,
+[data-theme="light"] .testimonial-card,
+[data-theme="light"] .why-card,
+[data-theme="light"] .contact-info-card,
+[data-theme="light"] .contact-form,
+[data-theme="light"] .pricing-card,
+[data-theme="light"] .tech-card,
+[data-theme="light"] .payment-card {
+  border-color: rgba(0,0,0,0.08);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+}
+
+[data-theme="light"] .form-group input,
+[data-theme="light"] .form-group select,
+[data-theme="light"] .form-group textarea {
+  background: rgba(0,0,0,0.02);
+  border-color: rgba(0,0,0,0.12);
+  color: var(--color-light);
+}
+
+[data-theme="light"] .hero-mockup,
+[data-theme="light"] .bricks-mockup {
+  background: var(--bg-card);
+  border-color: rgba(0,0,0,0.08);
+}
+
+[data-theme="light"] .hamburger span {
+  background: var(--color-light);
+}

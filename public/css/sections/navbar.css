@@ -9,10 +9,10 @@
 }
 
 .navbar.scrolled {
-  background: rgba(12, 31, 63, 0.95);
+  background: var(--bg-primary);
   backdrop-filter: blur(12px);
   padding: 12px 0;
-  box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+  box-shadow: var(--shadow);
 }
 
 .nav-inner {
@@ -110,7 +110,7 @@
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(12, 31, 63, 0.98);
+  background: var(--bg-primary);
   flex-direction: column;
   align-items: center;
   justify-content: center;

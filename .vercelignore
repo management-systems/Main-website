@@ -2,3 +2,7 @@ managementsystems/
 backend/
 node_modules/
 .env
+*.md
+.dockerignore
+Dockerfile
+docker-compose.yml
