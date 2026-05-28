@@ -75,7 +75,7 @@ body {
   height: 100%;
 }
 
-.navbar, .section, .footer, .floating-whatsapp, .cta-popup-overlay, .mobile-nav {
+.navbar, .section, footer, .floating-whatsapp, .cta-popup-overlay, .mobile-nav {
   position: relative;
   z-index: 1;
 }
