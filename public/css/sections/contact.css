@@ -161,12 +161,14 @@
   background: var(--bg-card);
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: var(--radius-md);
-  padding: 40px 36px;
+  padding: 36px 32px;
   text-align: center;
-  max-width: 420px;
-  width: 90%;
+  max-width: 440px;
+  width: 92%;
   position: relative;
   animation: slideUp 0.3s ease;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 [data-theme="light"] .cta-popup {
@@ -177,29 +179,77 @@
 .cta-popup h3 {
   font-size: 1.3rem;
   color: var(--color-white);
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .cta-popup p {
   color: var(--color-gray);
-  font-size: 0.9rem;
-  margin-bottom: 24px;
+  font-size: 0.85rem;
+  margin-bottom: 20px;
 }
 
-.cta-popup-buttons {
+.popup-form {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  text-align: left;
 }
 
-.cta-popup-buttons .btn {
-  justify-content: center;
+.popup-form input,
+.popup-form select,
+.popup-form textarea {
+  width: 100%;
+  padding: 12px 14px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius-sm);
+  color: var(--color-white);
+  font-family: inherit;
+  font-size: 0.85rem;
+  transition: var(--transition);
+}
+
+[data-theme="light"] .popup-form input,
+[data-theme="light"] .popup-form select,
+[data-theme="light"] .popup-form textarea {
+  background: rgba(0,0,0,0.02);
+  border-color: rgba(0,0,0,0.12);
+  color: var(--color-light);
+}
+
+.popup-form input:focus,
+.popup-form select:focus,
+.popup-form textarea:focus {
+  outline: none;
+  border-color: var(--color-accent);
+}
+
+.popup-form textarea {
+  resize: vertical;
+  min-height: 70px;
+}
+
+.popup-form select option {
+  background: var(--bg-primary);
+}
+
+.popup-whatsapp {
+  display: block;
+  margin-top: 16px;
+  font-size: 0.8rem;
+  color: var(--color-accent);
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+.popup-whatsapp:hover {
+  text-decoration: underline;
 }
 
 .cta-popup-close {
   position: absolute;
-  top: 12px;
-  right: 16px;
+  top: 10px;
+  right: 14px;
   background: none;
   border: none;
   color: var(--color-gray);

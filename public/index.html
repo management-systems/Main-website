@@ -605,7 +605,7 @@
           <h2 class="section-title">Let's Build Something Great</h2>
           <p class="section-subtitle">Whether you're an individual, a small shop, or a large company — we're ready to help you go digital.</p>
           <div class="contact-info-cards">
-            <a href="https://wa.me/919992662555?text=Hi%20Management%20Systems!%20I%20am%20interested%20in%20your%20services.%20Please%20share%20more%20details." target="_blank" class="contact-info-card">
+            <a href="https://wa.me/919992662555?text=Hi%20Management%20Systems!%20I%20visited%20your%20website%20and%20I%27m%20interested%20in%20your%20services.%20Please%20share%20more%20details." target="_blank" class="contact-info-card">
               <div class="contact-info-icon">💬</div>
               <div><h4>WhatsApp Us</h4><p>Click to message us directly — we reply within minutes!</p></div>
             </a>
@@ -678,7 +678,7 @@
           </a>
           <p>Building digital solutions that automate your business — apps, websites & custom software at affordable prices.</p>
           <div class="footer-socials">
-            <a href="https://wa.me/919992662555?text=Hi%20Management%20Systems!%20I%20want%20to%20know%20more%20about%20your%20services." target="_blank" title="WhatsApp">💬</a>
+            <a href="https://wa.me/919992662555?text=Hi%20Management%20Systems!%20I%20visited%20your%20website%20and%20I%27m%20interested%20in%20your%20services.%20Could%20you%20please%20share%20more%20details%3F" target="_blank" title="WhatsApp">💬</a>
             <a href="mailto:admin@managementsystems.in" title="Email">✉️</a>
             <a href="tel:+919992662555" title="Call">📞</a>
           </div>
@@ -716,12 +716,23 @@
   <div class="cta-popup-overlay" id="ctaPopup" style="display:none;">
     <div class="cta-popup">
       <button class="cta-popup-close" id="ctaPopupClose">&times;</button>
-      <h3>Need a Website or App?</h3>
-      <p>Let's discuss your project — we reply within minutes!</p>
-      <div class="cta-popup-buttons">
-        <a href="#contact" class="btn btn-accent" id="ctaPopupContact">Send Message →</a>
-        <a href="https://wa.me/919992662555?text=Hi%20Management%20Systems!%20I%20am%20interested%20in%20your%20services." target="_blank" class="btn btn-outline">WhatsApp Us 💬</a>
-      </div>
+      <h3>Get a Free Consultation</h3>
+      <p>Tell us about your project — we'll get back to you shortly!</p>
+      <form id="popupForm" class="popup-form">
+        <input type="text" name="name" placeholder="Your Name" required>
+        <input type="tel" name="phone" placeholder="Phone Number" required>
+        <input type="email" name="email" placeholder="Email Address" required>
+        <select name="service">
+          <option value="">Select a service</option>
+          <option value="website">Website Development</option>
+          <option value="mobile-app">Mobile App</option>
+          <option value="automation">Business Automation</option>
+          <option value="other">Other</option>
+        </select>
+        <textarea name="message" placeholder="Briefly describe your requirement..." rows="3" required></textarea>
+        <button type="submit" class="btn btn-accent" style="width:100%;justify-content:center;">Send Message →</button>
+      </form>
+      <a href="https://wa.me/919992662555?text=Hi%20Management%20Systems!%20I%20visited%20your%20website%20and%20I%27m%20interested%20in%20your%20services.%20Please%20share%20more%20details." target="_blank" class="popup-whatsapp">Or WhatsApp us directly 💬</a>
     </div>
   </div>
 
@@ -807,7 +818,7 @@
     // CTA Popup - show every 2 minutes
     const ctaPopup = document.getElementById('ctaPopup');
     const ctaClose = document.getElementById('ctaPopupClose');
-    const ctaContact = document.getElementById('ctaPopupContact');
+    const popupForm = document.getElementById('popupForm');
 
     function showCtaPopup() {
       ctaPopup.style.display = 'flex';
@@ -819,7 +830,27 @@
 
     ctaClose.addEventListener('click', hideCtaPopup);
     ctaPopup.addEventListener('click', (e) => { if (e.target === ctaPopup) hideCtaPopup(); });
-    ctaContact.addEventListener('click', hideCtaPopup);
+
+    popupForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(popupForm));
+      try {
+        const res = await fetch('/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        const result = await res.json();
+        if (res.ok) {
+          popupForm.innerHTML = '<p style="color:var(--color-accent);font-size:1.1rem;padding:20px 0;">\u2705 Message sent successfully! We\'ll contact you soon.</p>';
+          setTimeout(hideCtaPopup, 3000);
+        } else {
+          alert(result.error);
+        }
+      } catch {
+        alert('Something went wrong. Please try again.');
+      }
+    });
 
     // Show after 2 minutes, then repeat every 2 minutes
     setTimeout(showCtaPopup, 120000);
@@ -828,18 +859,22 @@
   <script>
     // Load dynamic site details
     fetch('/api/details').then(r => r.json()).then(d => {
-      document.querySelectorAll('a[href="mailto:admin@managementsystems.in"]').forEach(el => {
-        el.href = 'mailto:' + d.email;
-        if (el.querySelector('p')) el.querySelector('p').textContent = d.email;
-      });
-      document.querySelectorAll('a[href="tel:+919992662555"]').forEach(el => {
-        el.href = 'tel:+91' + d.phone;
-        if (el.querySelector('p')) el.querySelector('p').textContent = '+91 ' + d.phone;
-      });
-      const waLinks = document.querySelectorAll('a[href*="wa.me"]');
-      waLinks.forEach(el => {
-        el.href = `https://wa.me/91${d.phone}?text=Hi%20${encodeURIComponent(d.company)}!%20I%20am%20interested%20in%20your%20services.`;
-      });
+      if (d.email) {
+        document.querySelectorAll('a[href="mailto:admin@managementsystems.in"]').forEach(el => {
+          el.href = 'mailto:' + d.email;
+          if (el.querySelector('p')) el.querySelector('p').textContent = d.email;
+        });
+      }
+      if (d.phone) {
+        document.querySelectorAll('a[href="tel:+919992662555"]').forEach(el => {
+          el.href = 'tel:+91' + d.phone;
+          if (el.querySelector('p')) el.querySelector('p').textContent = '+91 ' + d.phone;
+        });
+        const waLinks = document.querySelectorAll('a[href*="wa.me"]');
+        waLinks.forEach(el => {
+          el.href = `https://wa.me/91${d.phone}?text=Hi%20Management%20Systems!%20I%20visited%20your%20website%20and%20I'm%20interested%20in%20your%20services.%20Please%20share%20more%20details.`;
+        });
+      }
     }).catch(() => {});
   </script>
 </body>
