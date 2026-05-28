@@ -33,6 +33,16 @@ app.get('/api/details', (req, res) => {
   res.json({ name: '', email: config.email, phone: config.phone });
 });
 
+// Public API: discounts
+app.get('/api/discounts', (req, res) => {
+  const fs = require('fs');
+  const discountsFile = path.join(__dirname, 'data/discounts.json');
+  if (fs.existsSync(discountsFile)) {
+    return res.json(JSON.parse(fs.readFileSync(discountsFile, 'utf-8')));
+  }
+  res.json({});
+});
+
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../frontend/index.html'));
 });

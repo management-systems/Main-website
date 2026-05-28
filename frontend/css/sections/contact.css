@@ -108,3 +108,39 @@
   .contact-inner { grid-template-columns: 1fr; }
   .form-row { grid-template-columns: 1fr; }
 }
+
+.form-popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.form-popup {
+  background: var(--bg-card);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius-md);
+  padding: 32px 40px;
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+}
+
+.form-popup.success p { color: var(--color-accent); }
+.form-popup.error p { color: #ff5f57; }
+
+.form-popup-close {
+  margin-top: 20px;
+  padding: 10px 32px;
+  background: var(--color-accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.form-popup-close:hover { opacity: 0.85; }
