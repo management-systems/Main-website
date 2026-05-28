@@ -144,3 +144,81 @@
 }
 
 .form-popup-close:hover { opacity: 0.85; }
+
+/* CTA Popup */
+.cta-popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: fadeIn 0.3s ease;
+}
+
+.cta-popup {
+  background: var(--bg-card);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius-md);
+  padding: 40px 36px;
+  text-align: center;
+  max-width: 420px;
+  width: 90%;
+  position: relative;
+  animation: slideUp 0.3s ease;
+}
+
+[data-theme="light"] .cta-popup {
+  border-color: rgba(0,0,0,0.1);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+}
+
+.cta-popup h3 {
+  font-size: 1.3rem;
+  color: var(--color-white);
+  margin-bottom: 8px;
+}
+
+.cta-popup p {
+  color: var(--color-gray);
+  font-size: 0.9rem;
+  margin-bottom: 24px;
+}
+
+.cta-popup-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cta-popup-buttons .btn {
+  justify-content: center;
+}
+
+.cta-popup-close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: var(--color-gray);
+  font-size: 1.8rem;
+  cursor: pointer;
+  line-height: 1;
+  transition: var(--transition);
+}
+
+.cta-popup-close:hover {
+  color: var(--color-white);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}

@@ -57,6 +57,7 @@
     <a href="#pricing">Pricing</a>
     <a href="#why-us">Why Us</a>
     <a href="#contact">Contact</a>
+    <button class="theme-toggle" id="mobileThemeToggle" title="Toggle theme">🌙</button>
   </div>
 
   <!-- Hero -->
@@ -711,26 +712,48 @@
     </div>
   </footer>
 
+  <!-- CTA Popup -->
+  <div class="cta-popup-overlay" id="ctaPopup" style="display:none;">
+    <div class="cta-popup">
+      <button class="cta-popup-close" id="ctaPopupClose">&times;</button>
+      <h3>Need a Website or App?</h3>
+      <p>Let's discuss your project — we reply within minutes!</p>
+      <div class="cta-popup-buttons">
+        <a href="#contact" class="btn btn-accent" id="ctaPopupContact">Send Message →</a>
+        <a href="https://wa.me/919992662555?text=Hi%20Management%20Systems!%20I%20am%20interested%20in%20your%20services." target="_blank" class="btn btn-outline">WhatsApp Us 💬</a>
+      </div>
+    </div>
+  </div>
+
   <script type="module" src="js/main.js"></script>
   <script>
     // Theme toggle
     const themeToggle = document.getElementById('themeToggle');
+    const mobileThemeToggle = document.getElementById('mobileThemeToggle');
     const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark') {
-      document.documentElement.removeAttribute('data-theme');
-      themeToggle.textContent = '🌙';
-    } else {
-      document.documentElement.setAttribute('data-theme', 'light');
-      themeToggle.textContent = '☀️';
+
+    function applyTheme(theme) {
+      if (theme === 'dark') {
+        document.documentElement.removeAttribute('data-theme');
+        themeToggle.textContent = '🌙';
+        mobileThemeToggle.textContent = '🌙 Dark Mode';
+      } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+        themeToggle.textContent = '☀️';
+        mobileThemeToggle.textContent = '☀️ Light Mode';
+      }
     }
-    themeToggle.addEventListener('click', () => {
+
+    function toggleTheme() {
       const isLight = document.documentElement.getAttribute('data-theme') === 'light';
-      document.documentElement.setAttribute('data-theme', isLight ? '' : 'light');
-      if (isLight) document.documentElement.removeAttribute('data-theme');
-      else document.documentElement.setAttribute('data-theme', 'light');
-      themeToggle.textContent = isLight ? '🌙' : '☀️';
-      localStorage.setItem('theme', isLight ? 'dark' : 'light');
-    });
+      const newTheme = isLight ? 'dark' : 'light';
+      applyTheme(newTheme);
+      localStorage.setItem('theme', newTheme);
+    }
+
+    applyTheme(savedTheme === 'dark' ? 'dark' : 'light');
+    themeToggle.addEventListener('click', toggleTheme);
+    mobileThemeToggle.addEventListener('click', toggleTheme);
 
     // Pricing tabs
     document.querySelectorAll('.pricing-tab').forEach(tab => {
@@ -780,6 +803,27 @@
     }
 
     fetch('/api/discounts').then(r => r.json()).then(renderPrices).catch(() => renderPrices({}));
+
+    // CTA Popup - show every 2 minutes
+    const ctaPopup = document.getElementById('ctaPopup');
+    const ctaClose = document.getElementById('ctaPopupClose');
+    const ctaContact = document.getElementById('ctaPopupContact');
+
+    function showCtaPopup() {
+      ctaPopup.style.display = 'flex';
+    }
+
+    function hideCtaPopup() {
+      ctaPopup.style.display = 'none';
+    }
+
+    ctaClose.addEventListener('click', hideCtaPopup);
+    ctaPopup.addEventListener('click', (e) => { if (e.target === ctaPopup) hideCtaPopup(); });
+    ctaContact.addEventListener('click', hideCtaPopup);
+
+    // Show after 2 minutes, then repeat every 2 minutes
+    setTimeout(showCtaPopup, 120000);
+    setInterval(showCtaPopup, 120000);
   </script>
   <script>
     // Load dynamic site details
