@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Us | Management Systems</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/sections/navbar.css">
+  <link rel="stylesheet" href="css/sections/contact.css">
+  <link rel="stylesheet" href="css/sections/footer.css">
+</head>
+<body>
+
+  <nav class="navbar scrolled" id="navbar">
+    <div class="container nav-inner">
+      <a href="/" class="nav-logo"><img src="logo_transparent.svg" alt="Logo" class="nav-logo-icon"><div class="nav-logo-text"><span class="logo-top">Management</span><span class="logo-bottom">Systems</span></div></a>
+      <div class="nav-links">
+        <a href="/">Home</a><a href="/services">Services</a><a href="/pricing">Pricing</a><a href="/portfolio">Portfolio</a>
+        <button class="theme-toggle" id="themeToggle" title="Toggle theme">🌙</button>
+        <a href="/contact" class="nav-cta">Contact Us</a>
+      </div>
+      <div class="hamburger" id="hamburger"><span></span><span></span><span></span></div>
+    </div>
+  </nav>
+  <div class="mobile-nav" id="mobileNav">
+    <a href="/">Home</a><a href="/services">Services</a><a href="/pricing">Pricing</a><a href="/portfolio">Portfolio</a><a href="/contact">Contact</a>
+    <button class="theme-toggle" id="mobileThemeToggle" title="Toggle theme">🌙</button>
+  </div>
+
+  <section class="section" style="padding-top:140px;">
+    <div class="container">
+      <div class="fade-in" style="text-align:center;margin-bottom:48px;">
+        <p class="section-label">Get In Touch</p>
+        <h2 class="section-title">Let's Build Something Great</h2>
+        <p class="section-subtitle" style="margin:0 auto;">Have a project in mind? Fill out the form below and we'll get back to you within 24 hours.</p>
+      </div>
+
+      <div class="contact-inner">
+        <div class="fade-in">
+          <div class="contact-info-cards">
+            <a href="https://wa.me/919992662555?text=Hi%20Management%20Systems!%20I%20visited%20your%20website%20and%20I%27m%20interested%20in%20your%20services.%20Please%20share%20more%20details." target="_blank" class="contact-info-card">
+              <div class="contact-info-icon">💬</div>
+              <div><h4>WhatsApp Us</h4><p>We reply within minutes!</p></div>
+            </a>
+            <a href="mailto:admin@managementsystems.in" class="contact-info-card">
+              <div class="contact-info-icon">✉️</div>
+              <div><h4>Email</h4><p>admin@managementsystems.in</p></div>
+            </a>
+            <a href="tel:+919992662555" class="contact-info-card">
+              <div class="contact-info-icon">📞</div>
+              <div><h4>Call Us</h4><p>+91 9992662555</p></div>
+            </a>
+            <div class="contact-info-card">
+              <div class="contact-info-icon">🕐</div>
+              <div><h4>Business Hours</h4><p>Mon – Sat, 10:00 AM – 7:00 PM</p></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="contact-form fade-in">
+          <form id="contactForm">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Full Name *</label>
+                <input type="text" name="name" placeholder="Your full name" required>
+              </div>
+              <div class="form-group">
+                <label>Phone Number *</label>
+                <input type="tel" name="phone" placeholder="+91 9876543210" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Email Address *</label>
+              <input type="email" name="email" placeholder="you@example.com" required>
+            </div>
+            <div class="form-group">
+              <label>What service are you looking for?</label>
+              <select name="service">
+                <option value="">Select a service</option>
+                <option value="starter-website">Starter Website (₹15,000)</option>
+                <option value="professional-website">Professional Website (₹25,000)</option>
+                <option value="advanced-platform">Advanced Platform (₹40,000+)</option>
+                <option value="mobile-app">Mobile App Development</option>
+                <option value="automation">Business Automation</option>
+                <option value="maintenance">Hosting & Maintenance</option>
+                <option value="other">Other / Custom Requirement</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Project Details *</label>
+              <textarea name="message" placeholder="Tell us about your business, what you need, and any specific requirements..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-accent form-submit">Send Message →</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand"><a href="/" class="nav-logo"><img src="logo_transparent.svg" alt="Logo" class="nav-logo-icon"><div class="nav-logo-text"><span class="logo-top">Management</span><span class="logo-bottom">Systems</span></div></a><p>Building digital solutions that automate your business.</p></div>
+        <div class="footer-col"><h4>Quick Links</h4><a href="/services">Services</a><a href="/pricing">Pricing</a><a href="/portfolio">Portfolio</a><a href="/contact">Contact</a></div>
+        <div class="footer-col"><h4>Contact</h4><a href="https://wa.me/919992662555" target="_blank">WhatsApp</a><a href="mailto:admin@managementsystems.in">admin@managementsystems.in</a><a href="tel:+919992662555">+91 9992662555</a></div>
+      </div>
+      <div class="footer-bottom"><p>&copy; 2024 Management Systems. All rights reserved.</p></div>
+    </div>
+  </footer>
+
+  <script type="module" src="js/main.js"></script>
+  <script>
+    const themeToggle = document.getElementById('themeToggle');
+    const mobileThemeToggle = document.getElementById('mobileThemeToggle');
+    function applyTheme(t){if(t==='dark'){document.documentElement.removeAttribute('data-theme');themeToggle.textContent='🌙';mobileThemeToggle.textContent='🌙 Dark Mode';}else{document.documentElement.setAttribute('data-theme','light');themeToggle.textContent='☀️';mobileThemeToggle.textContent='☀️ Light Mode';}}
+    function toggleTheme(){const l=document.documentElement.getAttribute('data-theme')==='light';applyTheme(l?'dark':'light');localStorage.setItem('theme',l?'dark':'light');}
+    applyTheme(localStorage.getItem('theme')==='dark'?'dark':'light');
+    themeToggle.addEventListener('click',toggleTheme);mobileThemeToggle.addEventListener('click',toggleTheme);
+
+    // Contact form
+    function showPopup(message, isSuccess) {
+      const existing = document.querySelector('.form-popup-overlay');
+      if (existing) existing.remove();
+      const overlay = document.createElement('div');
+      overlay.className = 'form-popup-overlay';
+      overlay.innerHTML = `<div class="form-popup ${isSuccess ? 'success' : 'error'}"><p>${message}</p><button class="form-popup-close">OK</button></div>`;
+      document.body.appendChild(overlay);
+      overlay.querySelector('.form-popup-close').addEventListener('click', () => overlay.remove());
+      overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+    }
+
+    document.getElementById('contactForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(e.target));
+      try {
+        const res = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+        const result = await res.json();
+        if (res.ok) { showPopup('✅ Message sent successfully! We\'ll contact you within 24 hours.', true); e.target.reset(); }
+        else { showPopup(result.error, false); }
+      } catch { showPopup('Something went wrong. Please WhatsApp us directly.', false); }
+    });
+  </script>
+</body>
+</html>

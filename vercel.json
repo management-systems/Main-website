@@ -1,10 +1,7 @@
 {
   "version": 2,
   "functions": {
-    "api/index.js": {
-      "memory": 256,
-      "maxDuration": 10
-    }
+    "api/index.js": { "memory": 256, "maxDuration": 10 }
   },
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/index.js" },
@@ -16,6 +13,10 @@
     { "source": "/admin/dashboard", "destination": "/api/index.js" },
     { "source": "/admin/dashboard/", "destination": "/api/index.js" },
     { "source": "/admin", "destination": "/api/index.js" },
-    { "source": "/admin/", "destination": "/api/index.js" }
+    { "source": "/admin/", "destination": "/api/index.js" },
+    { "source": "/services", "destination": "/services.html" },
+    { "source": "/pricing", "destination": "/pricing.html" },
+    { "source": "/portfolio", "destination": "/portfolio.html" },
+    { "source": "/contact", "destination": "/contact.html" }
   ]
 }

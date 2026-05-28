@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pricing | Management Systems</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/sections/navbar.css">
+  <link rel="stylesheet" href="css/sections/pricing.css">
+  <link rel="stylesheet" href="css/sections/footer.css">
+</head>
+<body>
+
+  <nav class="navbar scrolled" id="navbar">
+    <div class="container nav-inner">
+      <a href="/" class="nav-logo"><img src="logo_transparent.svg" alt="Logo" class="nav-logo-icon"><div class="nav-logo-text"><span class="logo-top">Management</span><span class="logo-bottom">Systems</span></div></a>
+      <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/services">Services</a>
+        <a href="/pricing">Pricing</a>
+        <a href="/portfolio">Portfolio</a>
+        <button class="theme-toggle" id="themeToggle" title="Toggle theme">🌙</button>
+        <a href="/contact" class="nav-cta">Contact Us</a>
+      </div>
+      <div class="hamburger" id="hamburger"><span></span><span></span><span></span></div>
+    </div>
+  </nav>
+  <div class="mobile-nav" id="mobileNav">
+    <a href="/">Home</a><a href="/services">Services</a><a href="/pricing">Pricing</a><a href="/portfolio">Portfolio</a><a href="/contact">Contact</a>
+    <button class="theme-toggle" id="mobileThemeToggle" title="Toggle theme">🌙</button>
+  </div>
+
+  <section class="section" style="padding-top:140px;">
+    <div class="container">
+      <div class="fade-in" style="text-align:center;">
+        <p class="section-label">Pricing</p>
+        <h2 class="section-title">Transparent & Affordable Plans</h2>
+        <p class="section-subtitle" style="margin:0 auto;">Professional website development and hosting services for businesses of all sizes.</p>
+      </div>
+
+      <div class="pricing-tabs">
+        <button class="pricing-tab active" data-tab="packages">Website Packages</button>
+        <button class="pricing-tab" data-tab="maintenance">Monthly Plans</button>
+        <button class="pricing-tab" data-tab="addons">Additional Services</button>
+        <button class="pricing-tab" data-tab="tech">Tech Stack</button>
+      </div>
+
+      <div class="pricing-panel active" id="panel-packages">
+        <div class="pricing-grid">
+          <div class="pricing-card fade-in" data-discount-key="starter"><h3>Starter Business Website</h3><div class="pricing-price" data-base-price="15000">₹15,000</div><p class="pricing-suitable">For small businesses, shops, consultants, startups & personal brands</p><ul class="pricing-features"><li>Up to 4 pages (Home, About, Services, Contact)</li><li>Responsive & mobile-friendly design</li><li>Contact form with WhatsApp integration</li><li>Image gallery</li><li>Basic SEO setup</li><li>SSL security setup</li><li>Social media integration</li><li>Fast loading & domain connection support</li></ul><a href="/contact" class="btn btn-outline">Get Started →</a></div>
+          <div class="pricing-card featured fade-in" data-discount-key="professional"><div class="pricing-card-badge">Most Popular</div><h3>Professional Business Website</h3><div class="pricing-price" data-base-price="25000">₹25,000</div><p class="pricing-suitable">For growing businesses, manufacturers, agencies, clinics & institutes</p><ul class="pricing-features"><li>Up to 8 pages with admin panel</li><li>Advanced responsive design</li><li>Dynamic content management</li><li>PostgreSQL database integration</li><li>Lead/contact & inquiry management</li><li>Blog/news section</li><li>Google Maps & analytics setup</li><li>Email notifications & user login</li><li>SEO optimization & backup setup</li><li>Performance optimization</li></ul><a href="/contact" class="btn btn-accent">Get Started →</a></div>
+          <div class="pricing-card fade-in" data-discount-key="advanced"><h3>Advanced Business Platform</h3><div class="pricing-price" data-base-price="40000" data-plus="true">₹40,000+</div><p class="pricing-suitable">For companies, SaaS platforms, large service businesses & multi-user systems</p><ul class="pricing-features"><li>Custom UI/UX with dashboard & analytics</li><li>Multi-user login with role-based access</li><li>PostgreSQL database & API integrations</li><li>Advanced admin panel with reports</li><li>File upload & data export/import</li><li>Notifications & automation workflows</li><li>Real-time dashboards</li><li>Cloud deployment with CI/CD support</li><li>Backup, recovery & security hardening</li><li>Performance monitoring</li></ul><a href="/contact" class="btn btn-outline">Get Started →</a></div>
+        </div>
+      </div>
+
+      <div class="pricing-panel" id="panel-maintenance">
+        <div class="pricing-grid">
+          <div class="pricing-card fade-in" data-discount-key="maintenance_basic"><h3>Basic Maintenance</h3><div class="pricing-price" data-base-price="1500" data-suffix="/month">₹1,500<span>/month</span></div><p class="pricing-suitable">For small websites, low traffic sites & business profile websites</p><ul class="pricing-features"><li>Website hosting</li><li>SSL certificate management</li><li>Website & uptime monitoring</li><li>Weekly backups</li><li>Basic security updates</li><li>Minor content changes</li><li>Technical & domain support</li></ul><a href="/contact" class="btn btn-outline">Choose Plan →</a></div>
+          <div class="pricing-card featured fade-in" data-discount-key="maintenance_professional"><div class="pricing-card-badge">Recommended</div><h3>Professional Maintenance</h3><div class="pricing-price" data-base-price="3000" data-suffix="/month">₹3,000<span>/month</span></div><p class="pricing-suitable">For growing businesses, dynamic websites & sites with admin panels</p><ul class="pricing-features"><li>Everything in Basic Plan</li><li>Priority support</li><li>Daily backups</li><li>Database & performance optimization</li><li>SEO maintenance & monthly reports</li><li>Security & speed monitoring</li><li>Minor feature updates</li></ul><a href="/contact" class="btn btn-accent">Choose Plan →</a></div>
+          <div class="pricing-card fade-in" data-discount-key="maintenance_enterprise"><h3>Enterprise Maintenance</h3><div class="pricing-price" data-base-price="5000" data-plus="true" data-suffix="/month">₹5,000+<span>/month</span></div><p class="pricing-suitable">For large business websites, multi-user systems & high-traffic platforms</p><ul class="pricing-features"><li>Dedicated & emergency support</li><li>Advanced infrastructure monitoring</li><li>Server & database optimization</li><li>Advanced security & load monitoring</li><li>API monitoring</li><li>Custom maintenance workflows</li><li>Database management</li></ul><a href="/contact" class="btn btn-outline">Choose Plan →</a></div>
+        </div>
+      </div>
+
+      <div class="pricing-panel" id="panel-addons">
+        <div class="fade-in">
+          <table class="services-table">
+            <thead><tr><th>Service</th><th>Starting Price</th></tr></thead>
+            <tbody>
+              <tr data-discount-key="addon_extra_page" data-base-price="2000"><td>Extra Page</td><td>₹2,000</td></tr>
+              <tr data-discount-key="addon_admin_dashboard" data-base-price="10000"><td>Admin Dashboard</td><td>₹10,000</td></tr>
+              <tr data-discount-key="addon_login_system" data-base-price="5000"><td>Login System</td><td>₹5,000</td></tr>
+              <tr data-discount-key="addon_payment_gateway" data-base-price="8000"><td>Payment Gateway</td><td>₹8,000</td></tr>
+              <tr data-discount-key="addon_seo" data-base-price="5000"><td>SEO Optimization</td><td>₹5,000</td></tr>
+              <tr data-discount-key="addon_blog" data-base-price="5000"><td>Blog System</td><td>₹5,000</td></tr>
+              <tr data-discount-key="addon_ecommerce" data-base-price="15000"><td>E-commerce Features</td><td>₹15,000</td></tr>
+              <tr data-discount-key="addon_api" data-base-price="5000"><td>API Integration</td><td>₹5,000</td></tr>
+              <tr data-discount-key="addon_database" data-base-price="5000"><td>Database Setup</td><td>₹5,000</td></tr>
+              <tr data-discount-key="addon_redesign" data-base-price="10000"><td>Website Redesign</td><td>₹10,000</td></tr>
+              <tr data-discount-key="addon_performance" data-base-price="5000"><td>Performance Optimization</td><td>₹5,000</td></tr>
+              <tr data-discount-key="addon_migration" data-base-price="5000"><td>Data Migration</td><td>₹5,000</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="payment-grid fade-in">
+          <div class="payment-card"><h4>💳 Development Projects</h4><p>50% advance before project start<br>Remaining payment before final deployment</p></div>
+          <div class="payment-card"><h4>🔄 Monthly Maintenance</h4><p>Monthly billing cycle<br>Hosting renewal charges included as per plan</p></div>
+        </div>
+      </div>
+
+      <div class="pricing-panel" id="panel-tech">
+        <div class="tech-grid fade-in">
+          <div class="tech-card"><h4>Frontend</h4><ul><li>React</li><li>HTML / CSS</li><li>JavaScript</li><li>Responsive UI</li></ul></div>
+          <div class="tech-card"><h4>Backend</h4><ul><li>Node.js</li><li>Express.js</li><li>REST APIs</li></ul></div>
+          <div class="tech-card"><h4>Database</h4><ul><li>PostgreSQL</li><li>SQL</li></ul></div>
+          <div class="tech-card"><h4>Deployment & Hosting</h4><ul><li>Docker</li><li>Nginx</li><li>VPS Hosting</li><li>SSL Security</li><li>Cloudflare</li></ul></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand"><a href="/" class="nav-logo"><img src="logo_transparent.svg" alt="Logo" class="nav-logo-icon"><div class="nav-logo-text"><span class="logo-top">Management</span><span class="logo-bottom">Systems</span></div></a><p>Building digital solutions that automate your business.</p></div>
+        <div class="footer-col"><h4>Quick Links</h4><a href="/services">Services</a><a href="/pricing">Pricing</a><a href="/portfolio">Portfolio</a><a href="/contact">Contact</a></div>
+        <div class="footer-col"><h4>Contact</h4><a href="https://wa.me/919992662555" target="_blank">WhatsApp</a><a href="mailto:admin@managementsystems.in">admin@managementsystems.in</a><a href="tel:+919992662555">+91 9992662555</a></div>
+      </div>
+      <div class="footer-bottom"><p>&copy; 2024 Management Systems. All rights reserved.</p></div>
+    </div>
+  </footer>
+
+  <script type="module" src="js/main.js"></script>
+  <script>
+    const themeToggle = document.getElementById('themeToggle');
+    const mobileThemeToggle = document.getElementById('mobileThemeToggle');
+    function applyTheme(t){if(t==='dark'){document.documentElement.removeAttribute('data-theme');themeToggle.textContent='🌙';mobileThemeToggle.textContent='🌙 Dark Mode';}else{document.documentElement.setAttribute('data-theme','light');themeToggle.textContent='☀️';mobileThemeToggle.textContent='☀️ Light Mode';}}
+    function toggleTheme(){const l=document.documentElement.getAttribute('data-theme')==='light';applyTheme(l?'dark':'light');localStorage.setItem('theme',l?'dark':'light');}
+    applyTheme(localStorage.getItem('theme')==='dark'?'dark':'light');
+    themeToggle.addEventListener('click',toggleTheme);mobileThemeToggle.addEventListener('click',toggleTheme);
+
+    // Pricing tabs
+    document.querySelectorAll('.pricing-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.pricing-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.pricing-panel').forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
+      });
+    });
+
+    // Discounts
+    function formatPrice(n){return '₹'+n.toLocaleString('en-IN');}
+    function renderPrices(d){
+      document.querySelectorAll('.pricing-card[data-discount-key]').forEach(c=>{const k=c.dataset.discountKey,p=c.querySelector('.pricing-price'),b=parseInt(p.dataset.basePrice),disc=d[k]||0,plus=p.dataset.plus==='true'?'+':'',suf=p.dataset.suffix||'';if(disc>0){const dp=Math.round(b*(1-disc/100));p.innerHTML=`<span class="price-original">${formatPrice(b)}${plus}</span> ${formatPrice(dp)}${plus}<span>${suf}</span><span class="discount-badge">${disc}% OFF</span>`;}else{p.innerHTML=`${formatPrice(b)}${plus}<span>${suf}</span>`;}});
+      document.querySelectorAll('tr[data-discount-key]').forEach(r=>{const k=r.dataset.discountKey,b=parseInt(r.dataset.basePrice),disc=d[k]||0,td=r.querySelector('td:last-child');if(disc>0){const dp=Math.round(b*(1-disc/100));td.innerHTML=`<span class="price-original">${formatPrice(b)}</span> ${formatPrice(dp)} <span class="discount-badge">${disc}% OFF</span>`;}else{td.textContent=formatPrice(b);}});
+    }
+    fetch('/api/discounts').then(r=>r.json()).then(renderPrices).catch(()=>renderPrices({}));
+  </script>
+</body>
+</html>
