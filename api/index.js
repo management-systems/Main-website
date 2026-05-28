@@ -14,7 +14,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Serve static files
-app.use(express.static(path.join(__dirname, '../frontend')));
+app.use(express.static(path.join(__dirname, '../public')));
 
 // MongoDB connection
 let db;
@@ -141,7 +141,7 @@ app.get('/admin', (req, res) => {
   if (token) {
     try { jwt.verify(token, config.jwtSecret); return res.redirect('/admin/dashboard'); } catch {}
   }
-  res.sendFile(path.join(__dirname, '../frontend/admin/login.html'));
+  res.sendFile(path.join(__dirname, '../public/admin/login.html'));
 });
 
 // Admin login POST
@@ -157,7 +157,7 @@ app.post('/admin/login', (req, res) => {
 
 // Admin dashboard page
 app.get('/admin/dashboard', auth, (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/admin/dashboard.html'));
+  res.sendFile(path.join(__dirname, '../public/admin/dashboard.html'));
 });
 
 // Admin: Get submissions
@@ -225,7 +225,7 @@ app.get('/admin/logout', (req, res) => {
 
 // Catch-all: serve index.html
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/index.html'));
+  res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
 module.exports = app;
