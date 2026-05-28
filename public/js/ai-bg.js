@@ -9,9 +9,9 @@
   const ctx = canvas.getContext('2d');
 
   let w, h, particles = [], mouse = { x: -1000, y: -1000 };
-  const PARTICLE_COUNT = 60;
-  const CONNECTION_DIST = 150;
-  const MOUSE_DIST = 200;
+  const PARTICLE_COUNT = 80;
+  const CONNECTION_DIST = 180;
+  const MOUSE_DIST = 220;
 
   function resize() {
     w = canvas.width = window.innerWidth;
@@ -52,7 +52,7 @@
       // Draw dot
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fillStyle = dotColor + (light ? '0.3)' : '0.5)');
+      ctx.fillStyle = dotColor + (light ? '0.5)' : '0.7)');
       ctx.fill();
 
       // Connect to nearby particles
@@ -62,12 +62,12 @@
         const dy = p.y - p2.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
         if (dist < CONNECTION_DIST) {
-          const opacity = (1 - dist / CONNECTION_DIST) * (light ? 0.08 : 0.15);
+          const opacity = (1 - dist / CONNECTION_DIST) * (light ? 0.15 : 0.25);
           ctx.beginPath();
           ctx.moveTo(p.x, p.y);
           ctx.lineTo(p2.x, p2.y);
           ctx.strokeStyle = lineColor + opacity + ')';
-          ctx.lineWidth = 0.5;
+          ctx.lineWidth = 0.7;
           ctx.stroke();
         }
       }
@@ -77,12 +77,12 @@
       const mdy = p.y - mouse.y;
       const mDist = Math.sqrt(mdx * mdx + mdy * mdy);
       if (mDist < MOUSE_DIST) {
-        const opacity = (1 - mDist / MOUSE_DIST) * (light ? 0.15 : 0.3);
+        const opacity = (1 - mDist / MOUSE_DIST) * (light ? 0.25 : 0.45);
         ctx.beginPath();
         ctx.moveTo(p.x, p.y);
         ctx.lineTo(mouse.x, mouse.y);
         ctx.strokeStyle = mouseLineColor + opacity + ')';
-        ctx.lineWidth = 0.8;
+        ctx.lineWidth = 1.2;
         ctx.stroke();
       }
     }
