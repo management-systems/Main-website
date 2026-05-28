@@ -6,6 +6,8 @@ const { MongoClient } = require('mongodb');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 
+const fs = require('fs');
+
 const app = express();
 
 app.use(cors());
@@ -141,7 +143,9 @@ app.get('/admin', (req, res) => {
   if (token) {
     try { jwt.verify(token, config.jwtSecret); return res.redirect('/admin/dashboard'); } catch {}
   }
-  res.sendFile(path.join(__dirname, '../public/admin/login.html'));
+  const html = fs.readFileSync(path.join(__dirname, '../public/admin/login.html'), 'utf-8');
+  res.setHeader('Content-Type', 'text/html');
+  res.send(html);
 });
 
 // Admin login POST
@@ -157,7 +161,9 @@ app.post('/admin/login', (req, res) => {
 
 // Admin dashboard page
 app.get('/admin/dashboard', auth, (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/admin/dashboard.html'));
+  const html = fs.readFileSync(path.join(__dirname, '../public/admin/dashboard.html'), 'utf-8');
+  res.setHeader('Content-Type', 'text/html');
+  res.send(html);
 });
 
 // Admin: Get submissions
@@ -225,7 +231,9 @@ app.get('/admin/logout', (req, res) => {
 
 // Catch-all: serve index.html
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/index.html'));
+  const html = fs.readFileSync(path.join(__dirname, '../public/index.html'), 'utf-8');
+  res.setHeader('Content-Type', 'text/html');
+  res.send(html);
 });
 
 module.exports = app;
