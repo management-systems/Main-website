@@ -3,26 +3,38 @@ const path = require('path');
 const nodemailer = require('nodemailer');
 const config = require('../config/app');
 
-const SUBMISSIONS_FILE = path.join(__dirname, '../data/submissions.json');
+// Use /tmp on Vercel (serverless), local dir otherwise
+const isVercel = process.env.VERCEL === '1';
+const dataDir = isVercel ? '/tmp' : path.join(__dirname, '../data');
+const SUBMISSIONS_FILE = path.join(dataDir, 'submissions.json');
 
-// Ensure data directory exists
-const dataDir = path.join(__dirname, '../data');
-if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
+// Ensure data directory exists (only for non-Vercel)
+if (!isVercel && !fs.existsSync(dataDir)) {
+  fs.mkdirSync(dataDir, { recursive: true });
+}
 
 // Load existing submissions
 function getSubmissions() {
-  if (!fs.existsSync(SUBMISSIONS_FILE)) return [];
-  return JSON.parse(fs.readFileSync(SUBMISSIONS_FILE, 'utf-8'));
+  try {
+    if (!fs.existsSync(SUBMISSIONS_FILE)) return [];
+    return JSON.parse(fs.readFileSync(SUBMISSIONS_FILE, 'utf-8'));
+  } catch {
+    return [];
+  }
 }
 
 // Save submission
 function saveSubmission(entry) {
-  const submissions = getSubmissions();
-  submissions.push(entry);
-  fs.writeFileSync(SUBMISSIONS_FILE, JSON.stringify(submissions, null, 2));
+  try {
+    const submissions = getSubmissions();
+    submissions.push(entry);
+    fs.writeFileSync(SUBMISSIONS_FILE, JSON.stringify(submissions, null, 2));
+  } catch (err) {
+    console.error('Save failed:', err.message);
+  }
 }
 
-// Email transporter — configure with your SMTP credentials
+// Email transporter
 const transporter = nodemailer.createTransport({
   host: config.smtp.host,
   port: config.smtp.port,
@@ -67,7 +79,6 @@ exports.submitContact = async (req, res) => {
     return res.status(400).json({ error: 'Invalid email address.' });
   }
 
-  // Check for duplicate submission (all fields same)
   const submissions = getSubmissions();
   const isDuplicate = submissions.some(s =>
     s.name === name && s.email === email && s.phone === (phone || '') && s.service === (service || '') && s.message === message
