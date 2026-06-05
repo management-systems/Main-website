@@ -1,6 +1,22 @@
+function showPopup(message, isSuccess) {
+  const existing = document.querySelector('.form-popup-overlay');
+  if (existing) existing.remove();
+
+  const overlay = document.createElement('div');
+  overlay.className = 'form-popup-overlay';
+  overlay.innerHTML = `
+    <div class="form-popup ${isSuccess ? 'success' : 'error'}">
+      <p>${message}</p>
+      <button class="form-popup-close">OK</button>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  overlay.querySelector('.form-popup-close').addEventListener('click', () => overlay.remove());
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+}
+
 export function initContactForm() {
   const form = document.getElementById('contactForm');
-  const msg = document.getElementById('formMessage');
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -15,16 +31,13 @@ export function initContactForm() {
       const result = await res.json();
 
       if (res.ok) {
-        msg.textContent = result.message;
-        msg.className = 'form-message success';
+        showPopup('Form sent successfully!', true);
         form.reset();
       } else {
-        msg.textContent = result.error;
-        msg.className = 'form-message error';
+        showPopup(result.error, false);
       }
     } catch {
-      msg.textContent = 'Something went wrong. Please WhatsApp us directly.';
-      msg.className = 'form-message error';
+      showPopup('Something went wrong. Please WhatsApp us directly.', false);
     }
   });
 }

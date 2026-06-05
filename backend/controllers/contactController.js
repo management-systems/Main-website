@@ -67,7 +67,16 @@ exports.submitContact = async (req, res) => {
     return res.status(400).json({ error: 'Invalid email address.' });
   }
 
-  const entry = { name, email, phone, service, message, submittedAt: new Date().toISOString() };
+  // Check for duplicate submission (all fields same)
+  const submissions = getSubmissions();
+  const isDuplicate = submissions.some(s =>
+    s.name === name && s.email === email && s.phone === (phone || '') && s.service === (service || '') && s.message === message
+  );
+  if (isDuplicate) {
+    return res.status(409).json({ error: 'You have already submitted this exact inquiry. Please modify your message to submit again.' });
+  }
+
+  const entry = { name, email, phone: phone || '', service: service || '', message, submittedAt: new Date().toISOString() };
 
   // Save to file
   saveSubmission(entry);

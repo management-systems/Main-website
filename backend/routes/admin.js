@@ -8,6 +8,7 @@ const auth = require('../middleware/auth');
 const router = express.Router();
 const SUBMISSIONS_FILE = path.join(__dirname, '../data/submissions.json');
 const DETAILS_FILE = path.join(__dirname, '../data/details.json');
+const DISCOUNTS_FILE = path.join(__dirname, '../data/discounts.json');
 
 function loadDetails() {
   if (!fs.existsSync(DETAILS_FILE)) {
@@ -20,6 +21,17 @@ function saveDetails(data) {
   const dir = path.dirname(DETAILS_FILE);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(DETAILS_FILE, JSON.stringify(data, null, 2));
+}
+
+function loadDiscounts() {
+  if (!fs.existsSync(DISCOUNTS_FILE)) return {};
+  return JSON.parse(fs.readFileSync(DISCOUNTS_FILE, 'utf-8'));
+}
+
+function saveDiscounts(data) {
+  const dir = path.dirname(DISCOUNTS_FILE);
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(DISCOUNTS_FILE, JSON.stringify(data, null, 2));
 }
 
 function loadSubmissions() {
@@ -97,6 +109,17 @@ router.put('/api/details', auth, (req, res) => {
   const details = { name: name || '', email: email || '', phone: phone || '' };
   saveDetails(details);
   res.json({ success: true, data: details });
+});
+
+// API: Get discounts
+router.get('/api/discounts', auth, (req, res) => {
+  res.json(loadDiscounts());
+});
+
+// API: Update discounts
+router.put('/api/discounts', auth, (req, res) => {
+  saveDiscounts(req.body);
+  res.json({ success: true, data: req.body });
 });
 
 // Logout
