@@ -51,6 +51,22 @@
 
 .theme-toggle:hover { transform: scale(1.1); }
 
+#ai-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+#ai-bg canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 html { scroll-behavior: smooth; }
@@ -61,6 +77,8 @@ body {
   color: var(--color-light);
   line-height: 1.6;
   overflow-x: hidden;
+  position: relative;
+  z-index: 1;
 }
 
 a { text-decoration: none; color: inherit; }
