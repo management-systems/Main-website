@@ -55,10 +55,11 @@
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
   pointer-events: none;
+  overflow: hidden;
 }
 
 #ai-bg canvas {
@@ -77,8 +78,6 @@ body {
   color: var(--color-light);
   line-height: 1.6;
   overflow-x: hidden;
-  position: relative;
-  z-index: 1;
 }
 
 a { text-decoration: none; color: inherit; }
