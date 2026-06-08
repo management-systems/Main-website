@@ -4,7 +4,7 @@ window.addEventListener('load', function() {
     const container = document.createElement('div');
     container.id = 'ai-bg';
     container.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:-1;pointer-events:none;overflow:hidden;';
-    document.body.prepend(container);
+    document.body.appendChild(container);
 
     const canvas = document.createElement('canvas');
     canvas.style.cssText = 'display:block;width:100%;height:100%;';
