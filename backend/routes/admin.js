@@ -6,9 +6,11 @@ const config = require('../config/app');
 const auth = require('../middleware/auth');
 
 const router = express.Router();
-const SUBMISSIONS_FILE = path.join(__dirname, '../data/submissions.json');
-const DETAILS_FILE = path.join(__dirname, '../data/details.json');
-const DISCOUNTS_FILE = path.join(__dirname, '../data/discounts.json');
+const isVercel = process.env.VERCEL === '1';
+const dataDir = isVercel ? '/tmp' : path.join(__dirname, '../data');
+const SUBMISSIONS_FILE = path.join(dataDir, 'submissions.json');
+const DETAILS_FILE = path.join(dataDir, 'details.json');
+const DISCOUNTS_FILE = path.join(dataDir, 'discounts.json');
 
 function loadDetails() {
   if (!fs.existsSync(DETAILS_FILE)) {
