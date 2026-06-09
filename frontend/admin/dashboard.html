@@ -5,337 +5,94 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard | Management Systems</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Inter', sans-serif; background: #0C1F3F; color: #E2E8F0; min-height: 100vh; }
-    .admin-nav { background: #142A50; border-bottom: 1px solid rgba(255,255,255,0.06); padding: 16px 32px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
-    .admin-nav h1 { font-size: 1.2rem; color: #fff; }
-    .admin-nav h1 span { color: #1D9E75; }
-    .admin-nav-right { display: flex; align-items: center; gap: 16px; }
-    .admin-nav-right span { font-size: 0.85rem; color: #A8B8D0; }
-    .btn-logout { padding: 8px 20px; background: rgba(255,95,87,0.15); color: #ff5f57; border: 1px solid rgba(255,95,87,0.3); border-radius: 6px; text-decoration: none; font-size: 0.85rem; transition: all 0.3s; }
-    .btn-logout:hover { background: rgba(255,95,87,0.25); }
-    .dashboard { padding: 32px; max-width: 1400px; margin: 0 auto; }
-    .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 32px; }
-    .stat-card { background: #142A50; border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 24px; }
-    .stat-card h3 { font-size: 2rem; color: #1D9E75; }
-    .stat-card p { font-size: 0.85rem; color: #A8B8D0; margin-top: 4px; }
-    .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-    .section-header h2 { font-size: 1.3rem; color: #fff; }
-    .filter-bar { display: flex; gap: 8px; flex-wrap: wrap; }
-    .filter-btn { padding: 6px 16px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; color: #A8B8D0; font-size: 0.8rem; cursor: pointer; transition: all 0.3s; }
-    .filter-btn.active, .filter-btn:hover { background: #1D9E75; color: #fff; border-color: #1D9E75; }
-    .submissions-list { display: flex; flex-direction: column; gap: 12px; }
-    .submission-card { background: #142A50; border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 24px; transition: all 0.3s; }
-    .submission-card:hover { border-color: rgba(29,158,117,0.3); }
-    .submission-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
-    .submission-name { font-size: 1.1rem; font-weight: 600; color: #fff; }
-    .submission-date { font-size: 0.75rem; color: #A8B8D0; }
-    .submission-meta { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 12px; }
-    .submission-meta span { font-size: 0.85rem; color: #A8B8D0; }
-    .submission-meta span strong { color: #E2E8F0; }
-    .submission-message { font-size: 0.9rem; color: #A8B8D0; line-height: 1.6; padding: 12px; background: rgba(255,255,255,0.02); border-radius: 8px; margin-bottom: 12px; }
-    .submission-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-    .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
-    .status-new { background: rgba(55,138,221,0.15); color: #378ADD; }
-    .status-contacted { background: rgba(29,158,117,0.15); color: #1D9E75; }
-    .status-closed { background: rgba(168,184,208,0.15); color: #A8B8D0; }
-    .btn-sm { padding: 6px 14px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; border: none; transition: all 0.3s; }
-    .btn-status { background: rgba(29,158,117,0.1); color: #1D9E75; border: 1px solid rgba(29,158,117,0.3); }
-    .btn-status:hover { background: rgba(29,158,117,0.2); }
-    .btn-delete { background: rgba(255,95,87,0.1); color: #ff5f57; border: 1px solid rgba(255,95,87,0.3); }
-    .btn-delete:hover { background: rgba(255,95,87,0.2); }
-    .btn-note { background: rgba(55,138,221,0.1); color: #378ADD; border: 1px solid rgba(55,138,221,0.3); }
-    .btn-note:hover { background: rgba(55,138,221,0.2); }
-    .note-input { margin-top: 12px; display: none; }
-    .note-input.show { display: flex; gap: 8px; }
-    .note-input input { flex: 1; padding: 10px 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #fff; font-size: 0.85rem; font-family: inherit; }
-    .note-input input:focus { outline: none; border-color: #1D9E75; }
-    .note-input button { padding: 10px 16px; background: #1D9E75; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 0.85rem; }
-    .submission-note { margin-top: 8px; font-size: 0.8rem; color: #378ADD; font-style: italic; }
-    .empty-state { text-align: center; padding: 60px; color: #A8B8D0; }
-    .details-section { background: #142A50; border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 24px; margin-bottom: 32px; }
-    .details-section h2 { font-size: 1.2rem; color: #fff; margin-bottom: 16px; }
-    .details-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; }
-    .details-form .form-group { display: flex; flex-direction: column; gap: 6px; }
-    .details-form label { font-size: 0.8rem; color: #A8B8D0; }
-    .details-form input { padding: 10px 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #fff; font-size: 0.9rem; font-family: inherit; }
-    .details-form input:focus { outline: none; border-color: #1D9E75; }
-    .btn-save-details { margin-top: 16px; padding: 10px 24px; background: #1D9E75; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-family: inherit; transition: background 0.3s; }
-    .btn-save-details:hover { background: #178a64; }
-    .empty-state h3 { font-size: 1.2rem; color: #fff; margin-bottom: 8px; }
-    .notification { position: fixed; top: 20px; right: 20px; padding: 14px 24px; background: #1D9E75; color: #fff; border-radius: 8px; font-size: 0.9rem; z-index: 1000; display: none; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
-    @media (max-width: 768px) {
-      .dashboard { padding: 16px; }
-      .admin-nav { padding: 12px 16px; }
-      .submission-top { flex-direction: column; gap: 4px; }
-    }
-  </style>
+  <link rel="stylesheet" href="/admin/css/admin.css">
 </head>
 <body>
   <nav class="admin-nav">
     <h1>Management<span>Systems</span> — Admin</h1>
     <div class="admin-nav-right">
-      <span>admin@managementsystems.in</span>
+      <a href="/admin/dashboard" class="nav-link active">Dashboard</a>
+      <a href="/admin/submissions" class="nav-link">Submissions</a>
+      <a href="/admin/customers" class="nav-link">Customers</a>
+      <a href="/admin/settings" class="nav-link">Settings</a>
       <a href="/admin/logout" class="btn-logout">Logout</a>
     </div>
   </nav>
 
   <div class="dashboard">
-    <!-- Manage Details Section -->
-    <div class="details-section">
-      <h2>📋 Manage Details</h2>
-      <div class="details-form">
-        <div class="form-group">
-          <label>Name</label>
-          <input type="text" id="detailName" placeholder="Person Name">
-        </div>
-        <div class="form-group">
-          <label>Email</label>
-          <input type="email" id="detailEmail" placeholder="Email Address">
-        </div>
-        <div class="form-group">
-          <label>Contact Number</label>
-          <input type="tel" id="detailPhone" placeholder="Phone Number">
-        </div>
-      </div>
-      <button class="btn-save-details" onclick="saveDetails()">Save Details</button>
-    </div>
-
-    <!-- Discount Management Section -->
-    <div class="details-section">
-      <h2>🌟 Manage Discounts (% off each item)</h2>
-      <p style="font-size:0.8rem;color:#A8B8D0;margin-bottom:16px;">Set 0 to show no discount. Each item has its own discount percentage.</p>
-      <div id="discountForm" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;"></div>
-      <button class="btn-save-details" onclick="saveDiscounts()" style="margin-top:20px;">Save All Discounts</button>
-    </div>
-
-    <div class="stats-row" id="statsRow">
-      <div class="stat-card"><h3 id="totalCount">0</h3><p>Total Submissions</p></div>
-      <div class="stat-card"><h3 id="newCount">0</h3><p>New / Unread</p></div>
-      <div class="stat-card"><h3 id="contactedCount">0</h3><p>Contacted</p></div>
+    <div class="stats-row">
+      <div class="stat-card"><h3 id="totalSubmissions">0</h3><p>Total Submissions</p></div>
+      <div class="stat-card"><h3 id="newSubmissions">0</h3><p>New / Unread</p></div>
+      <div class="stat-card"><h3 id="totalCustomers">0</h3><p>Customers</p></div>
       <div class="stat-card"><h3 id="todayCount">0</h3><p>Today</p></div>
     </div>
 
-    <div class="section-header">
-      <h2>Contact Submissions</h2>
-      <div class="filter-bar">
-        <button class="filter-btn active" data-filter="all">All</button>
-        <button class="filter-btn" data-filter="new">New</button>
-        <button class="filter-btn" data-filter="contacted">Contacted</button>
-        <button class="filter-btn" data-filter="closed">Closed</button>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-header">
+          <h2>📩 Recent Submissions</h2>
+          <a href="/admin/submissions" class="link-sm">View All →</a>
+        </div>
+        <div id="recentSubmissions" class="list-compact"></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h2>👥 Recent Customers</h2>
+          <a href="/admin/customers" class="link-sm">View All →</a>
+        </div>
+        <div id="recentCustomers" class="list-compact"></div>
       </div>
     </div>
-
-    <div class="submissions-list" id="submissionsList"></div>
   </div>
 
   <div class="notification" id="notification"></div>
 
   <script>
-    let submissions = [];
-    let currentFilter = 'all';
-
-    async function loadSubmissions() {
-      const res = await fetch('/admin/api/submissions');
-      if (res.redirected) { window.location.href = '/admin'; return; }
-      submissions = await res.json();
-      updateStats();
-      renderSubmissions();
-    }
-
-    function updateStats() {
+    async function load() {
+      const [subRes, custRes] = await Promise.all([
+        fetch('/admin/api/submissions'),
+        fetch('/admin/api/customers')
+      ]);
+      if (subRes.redirected) { window.location.href = '/admin'; return; }
+      const submissions = await subRes.json();
+      const customers = custRes.ok ? await custRes.json() : [];
       const today = new Date().toISOString().split('T')[0];
-      document.getElementById('totalCount').textContent = submissions.length;
-      document.getElementById('newCount').textContent = submissions.filter(s => !s.status || s.status === 'new').length;
-      document.getElementById('contactedCount').textContent = submissions.filter(s => s.status === 'contacted').length;
+
+      document.getElementById('totalSubmissions').textContent = submissions.length;
+      document.getElementById('newSubmissions').textContent = submissions.filter(s => !s.status || s.status === 'new').length;
+      document.getElementById('totalCustomers').textContent = customers.length;
       document.getElementById('todayCount').textContent = submissions.filter(s => s.submittedAt?.startsWith(today)).length;
+
+      const recentSub = document.getElementById('recentSubmissions');
+      const recent = [...submissions].reverse().slice(0, 5);
+      recentSub.innerHTML = recent.length ? recent.map((s, i) => `
+        <a href="/admin/submissions/${submissions.indexOf(s)}" class="list-item">
+          <div class="list-item-left">
+            <strong>${s.name}</strong>
+            <span>${s.service || 'General'}</span>
+          </div>
+          <div class="list-item-right">
+            <span class="status-badge status-${s.status || 'new'}">${(s.status || 'new').toUpperCase()}</span>
+            <span class="date-sm">${s.submittedAt ? new Date(s.submittedAt).toLocaleDateString() : ''}</span>
+          </div>
+        </a>
+      `).join('') : '<p class="empty-sm">No submissions yet</p>';
+
+      const recentCust = document.getElementById('recentCustomers');
+      const recentC = [...customers].reverse().slice(0, 5);
+      recentCust.innerHTML = recentC.length ? recentC.map((c, i) => `
+        <a href="/admin/customers/${customers.indexOf(c)}" class="list-item">
+          <div class="list-item-left">
+            <strong>${c.name}</strong>
+            <span>${c.email}</span>
+          </div>
+          <div class="list-item-right">
+            <span class="date-sm">${c.convertedAt ? new Date(c.convertedAt).toLocaleDateString() : ''}</span>
+          </div>
+        </a>
+      `).join('') : '<p class="empty-sm">No customers yet</p>';
     }
-
-    function renderSubmissions() {
-      const list = document.getElementById('submissionsList');
-      let filtered = [...submissions].reverse();
-
-      if (currentFilter !== 'all') {
-        filtered = filtered.filter(s => (s.status || 'new') === currentFilter);
-      }
-
-      if (filtered.length === 0) {
-        list.innerHTML = '<div class="empty-state"><h3>No submissions found</h3><p>Submissions will appear here when someone fills the contact form.</p></div>';
-        return;
-      }
-
-      list.innerHTML = filtered.map((s, displayIdx) => {
-        const realIdx = submissions.length - 1 - (currentFilter === 'all' ? displayIdx : submissions.indexOf(s));
-        const actualIdx = submissions.indexOf(s);
-        const status = s.status || 'new';
-        const date = s.submittedAt ? new Date(s.submittedAt).toLocaleString() : 'Unknown';
-        return `
-          <div class="submission-card" data-idx="${actualIdx}">
-            <div class="submission-top">
-              <span class="submission-name">${s.name}</span>
-              <span class="submission-date">${date}</span>
-            </div>
-            <div class="submission-meta">
-              <span>📧 <strong>${s.email}</strong></span>
-              <span>📞 <strong>${s.phone || 'N/A'}</strong></span>
-              <span>🏷️ <strong>${s.service || 'General'}</strong></span>
-              <span class="status-badge status-${status}">${status.toUpperCase()}</span>
-            </div>
-            <div class="submission-message">${s.message}</div>
-            ${s.notes ? `<div class="submission-note">📝 Note: ${s.notes}</div>` : ''}
-            <div class="submission-actions">
-              <button class="btn-sm btn-status" onclick="cycleStatus(${actualIdx})">Change Status</button>
-              <button class="btn-sm btn-note" onclick="toggleNote(${actualIdx})">Add Note</button>
-              <button class="btn-sm btn-delete" onclick="deleteSubmission(${actualIdx})">Delete</button>
-            </div>
-            <div class="note-input" id="note-${actualIdx}">
-              <input type="text" placeholder="Add a note..." value="${s.notes || ''}" id="noteVal-${actualIdx}">
-              <button onclick="saveNote(${actualIdx})">Save</button>
-            </div>
-          </div>`;
-      }).join('');
-    }
-
-    async function cycleStatus(idx) {
-      const statuses = ['new', 'contacted', 'closed'];
-      const current = submissions[idx].status || 'new';
-      const next = statuses[(statuses.indexOf(current) + 1) % statuses.length];
-      await updateSubmission(idx, { status: next });
-      notify(`Status changed to ${next.toUpperCase()}`);
-    }
-
-    function toggleNote(idx) {
-      const el = document.getElementById(`note-${idx}`);
-      el.classList.toggle('show');
-    }
-
-    async function saveNote(idx) {
-      const val = document.getElementById(`noteVal-${idx}`).value;
-      await updateSubmission(idx, { notes: val });
-      notify('Note saved');
-    }
-
-    async function deleteSubmission(idx) {
-      if (!confirm('Delete this submission?')) return;
-      await fetch(`/admin/api/submissions/${idx}`, { method: 'DELETE' });
-      submissions.splice(idx, 1);
-      updateStats();
-      renderSubmissions();
-      notify('Submission deleted');
-    }
-
-    async function updateSubmission(idx, data) {
-      const res = await fetch(`/admin/api/submissions/${idx}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
-      const result = await res.json();
-      if (result.success) {
-        submissions[idx] = result.data;
-        updateStats();
-        renderSubmissions();
-      }
-    }
-
-    function notify(msg) {
-      const el = document.getElementById('notification');
-      el.textContent = msg;
-      el.style.display = 'block';
-      setTimeout(() => el.style.display = 'none', 3000);
-    }
-
-    // Filter buttons
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        currentFilter = btn.dataset.filter;
-        renderSubmissions();
-      });
-    });
-
-    // Load and save site details
-    async function loadDetails() {
-      const res = await fetch('/admin/api/details');
-      if (res.ok) {
-        const data = await res.json();
-        document.getElementById('detailName').value = data.name || '';
-        document.getElementById('detailEmail').value = data.email || '';
-        document.getElementById('detailPhone').value = data.phone || '';
-      }
-    }
-
-    async function saveDetails() {
-      const body = {
-        name: document.getElementById('detailName').value,
-        email: document.getElementById('detailEmail').value,
-        phone: document.getElementById('detailPhone').value
-      };
-      const res = await fetch('/admin/api/details', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-      });
-      if (res.ok) notify('Details saved successfully!');
-      else notify('Failed to save details');
-    }
-
-    loadDetails();
-    loadDiscountsAdmin();
-    loadSubmissions();
-    // Auto-refresh every 30 seconds
-    setInterval(loadSubmissions, 30000);
-
-    const DISCOUNT_ITEMS = [
-      { key: 'starter', label: 'Starter Website (₹15,000)' },
-      { key: 'professional', label: 'Professional Website (₹25,000)' },
-      { key: 'advanced', label: 'Advanced Platform (₹40,000+)' },
-      { key: 'maintenance_basic', label: 'Basic Maintenance (₹1,500/mo)' },
-      { key: 'maintenance_professional', label: 'Professional Maintenance (₹3,000/mo)' },
-      { key: 'maintenance_enterprise', label: 'Enterprise Maintenance (₹5,000+/mo)' },
-      { key: 'addon_extra_page', label: 'Extra Page (₹2,000)' },
-      { key: 'addon_admin_dashboard', label: 'Admin Dashboard (₹10,000)' },
-      { key: 'addon_login_system', label: 'Login System (₹5,000)' },
-      { key: 'addon_payment_gateway', label: 'Payment Gateway (₹8,000)' },
-      { key: 'addon_seo', label: 'SEO Optimization (₹5,000)' },
-      { key: 'addon_blog', label: 'Blog System (₹5,000)' },
-      { key: 'addon_ecommerce', label: 'E-commerce (₹15,000)' },
-      { key: 'addon_api', label: 'API Integration (₹5,000)' },
-      { key: 'addon_database', label: 'Database Setup (₹5,000)' },
-      { key: 'addon_redesign', label: 'Website Redesign (₹10,000)' },
-      { key: 'addon_performance', label: 'Performance Opt. (₹5,000)' },
-      { key: 'addon_migration', label: 'Data Migration (₹5,000)' }
-    ];
-
-    async function loadDiscountsAdmin() {
-      const res = await fetch('/admin/api/discounts');
-      const data = res.ok ? await res.json() : {};
-      const container = document.getElementById('discountForm');
-      container.innerHTML = DISCOUNT_ITEMS.map(item => `
-        <div style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.02);padding:10px 14px;border-radius:6px;border:1px solid rgba(255,255,255,0.06);">
-          <label style="flex:1;font-size:0.8rem;color:#A8B8D0;">${item.label}</label>
-          <input type="number" id="disc_${item.key}" value="${data[item.key] || 10}" min="0" max="100" style="width:60px;padding:6px 8px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:4px;color:#fff;font-size:0.85rem;text-align:center;">
-          <span style="font-size:0.75rem;color:#A8B8D0;">%</span>
-        </div>
-      `).join('');
-    }
-
-    async function saveDiscounts() {
-      const data = {};
-      DISCOUNT_ITEMS.forEach(item => {
-        const val = parseInt(document.getElementById('disc_' + item.key).value) || 0;
-        data[item.key] = Math.min(100, Math.max(0, val));
-      });
-      const res = await fetch('/admin/api/discounts', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
-      if (res.ok) notify('Discounts saved successfully!');
-      else notify('Failed to save discounts');
-    }
+    load();
   </script>
 </body>
 </html>

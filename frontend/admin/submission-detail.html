@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Submission Detail | Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/admin/css/admin.css">
+</head>
+<body>
+  <nav class="admin-nav">
+    <h1>Management<span>Systems</span> — Admin</h1>
+    <div class="admin-nav-right">
+      <a href="/admin/dashboard" class="nav-link">Dashboard</a>
+      <a href="/admin/submissions" class="nav-link active">Submissions</a>
+      <a href="/admin/customers" class="nav-link">Customers</a>
+      <a href="/admin/settings" class="nav-link">Settings</a>
+      <a href="/admin/logout" class="btn-logout">Logout</a>
+    </div>
+  </nav>
+
+  <div class="detail-page">
+    <a href="/admin/submissions" class="back-link">← Back to Submissions</a>
+
+    <div class="detail-header">
+      <h1 id="detailName">Loading...</h1>
+      <div class="detail-actions">
+        <button class="btn btn-warning" onclick="convertToCustomer()">⭐ Convert to Customer</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteSubmission()">🗑 Delete</button>
+      </div>
+    </div>
+
+    <div class="info-grid" id="infoGrid"></div>
+
+    <div class="message-box" id="messageBox">
+      <h3>💬 Original Message</h3>
+      <p id="messageText"></p>
+    </div>
+
+    <div class="remarks-section">
+      <h3>📝 Remarks & Notes</h3>
+      <div id="remarksList"></div>
+      <div class="remark-input">
+        <input type="text" id="remarkInput" placeholder="Add a remark..." onkeypress="if(event.key==='Enter')addRemark()">
+        <button class="btn btn-primary btn-sm" onclick="addRemark()">Add</button>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:12px;margin-top:32px;">
+      <button class="btn btn-primary" onclick="saveChanges()">💾 Save Changes</button>
+      <button class="btn btn-secondary" onclick="cycleStatus()">🔄 Change Status</button>
+    </div>
+  </div>
+
+  <div class="notification" id="notification"></div>
+
+  <script>
+    const idx = parseInt(window.location.pathname.split('/').pop());
+    let submission = null;
+
+    async function load() {
+      const res = await fetch('/admin/api/submissions');
+      if (res.redirected) { window.location.href = '/admin'; return; }
+      const submissions = await res.json();
+      submission = submissions[idx];
+      if (!submission) { window.location.href = '/admin/submissions'; return; }
+      render();
+    }
+
+    function render() {
+      document.getElementById('detailName').textContent = submission.name;
+      document.title = `${submission.name} | Submission Detail`;
+
+      document.getElementById('infoGrid').innerHTML = `
+        <div class="info-item">
+          <label>Name</label>
+          <input type="text" id="editName" value="${submission.name}">
+        </div>
+        <div class="info-item">
+          <label>Email</label>
+          <input type="email" id="editEmail" value="${submission.email}">
+        </div>
+        <div class="info-item">
+          <label>Phone</label>
+          <input type="tel" id="editPhone" value="${submission.phone || ''}">
+        </div>
+        <div class="info-item">
+          <label>Service</label>
+          <input type="text" id="editService" value="${submission.service || ''}">
+        </div>
+        <div class="info-item">
+          <label>Status</label>
+          <select id="editStatus">
+            <option value="new" ${submission.status === 'new' || !submission.status ? 'selected' : ''}>New</option>
+            <option value="contacted" ${submission.status === 'contacted' ? 'selected' : ''}>Contacted</option>
+            <option value="closed" ${submission.status === 'closed' ? 'selected' : ''}>Closed</option>
+            <option value="converted" ${submission.status === 'converted' ? 'selected' : ''}>Converted</option>
+          </select>
+        </div>
+        <div class="info-item">
+          <label>Submitted</label>
+          <div class="value">${submission.submittedAt ? new Date(submission.submittedAt).toLocaleString() : 'Unknown'}</div>
+        </div>
+      `;
+
+      document.getElementById('messageText').textContent = submission.message;
+      renderRemarks();
+    }
+
+    function renderRemarks() {
+      const list = document.getElementById('remarksList');
+      const remarks = submission.remarks || [];
+      if (!remarks.length) {
+        list.innerHTML = '<p style="color:#A8B8D0;font-size:0.85rem;padding:12px 0;">No remarks yet. Add one below.</p>';
+        return;
+      }
+      list.innerHTML = remarks.map((r, i) => `
+        <div class="remark-item">
+          <div class="remark-text">${r.text}</div>
+          <div class="remark-time">${new Date(r.timestamp).toLocaleString()}</div>
+        </div>
+      `).join('');
+    }
+
+    async function addRemark() {
+      const input = document.getElementById('remarkInput');
+      const text = input.value.trim();
+      if (!text) return;
+      if (!submission.remarks) submission.remarks = [];
+      submission.remarks.push({ text, timestamp: new Date().toISOString() });
+      input.value = '';
+      await saveToServer({ remarks: submission.remarks });
+      renderRemarks();
+      notify('Remark added');
+    }
+
+    async function saveChanges() {
+      const data = {
+        name: document.getElementById('editName').value,
+        email: document.getElementById('editEmail').value,
+        phone: document.getElementById('editPhone').value,
+        service: document.getElementById('editService').value,
+        status: document.getElementById('editStatus').value
+      };
+      await saveToServer(data);
+      Object.assign(submission, data);
+      document.getElementById('detailName').textContent = data.name;
+      notify('Changes saved');
+    }
+
+    async function cycleStatus() {
+      const statuses = ['new', 'contacted', 'closed', 'converted'];
+      const current = submission.status || 'new';
+      const next = statuses[(statuses.indexOf(current) + 1) % statuses.length];
+      await saveToServer({ status: next });
+      submission.status = next;
+      render();
+      notify(`Status → ${next.toUpperCase()}`);
+    }
+
+    async function convertToCustomer() {
+      if (!confirm('Convert this submission to a customer?')) return;
+      const res = await fetch('/admin/api/customers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: submission.name,
+          email: submission.email,
+          phone: submission.phone || '',
+          service: submission.service || '',
+          source: 'submission',
+          remarks: submission.remarks || [],
+          convertedAt: new Date().toISOString()
+        })
+      });
+      if (res.ok) {
+        await saveToServer({ status: 'converted' });
+        notify('Converted to customer!');
+        setTimeout(() => window.location.href = '/admin/customers', 1000);
+      }
+    }
+
+    async function deleteSubmission() {
+      if (!confirm('Permanently delete this submission?')) return;
+      await fetch(`/admin/api/submissions/${idx}`, { method: 'DELETE' });
+      window.location.href = '/admin/submissions';
+    }
+
+    async function saveToServer(data) {
+      await fetch(`/admin/api/submissions/${idx}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+    }
+
+    function notify(msg) {
+      const el = document.getElementById('notification');
+      el.textContent = msg;
+      el.style.display = 'block';
+      setTimeout(() => el.style.display = 'none', 3000);
+    }
+
+    load();
+  </script>
+</body>
+</html>

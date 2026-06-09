@@ -9,49 +9,27 @@ const { getDb } = require('../config/db');
 const router = express.Router();
 const isVercel = process.env.VERCEL === '1';
 const dataDir = path.join(__dirname, '../data');
-const SUBMISSIONS_FILE = path.join(dataDir, 'submissions.json');
-const DETAILS_FILE = path.join(dataDir, 'details.json');
-const DISCOUNTS_FILE = path.join(dataDir, 'discounts.json');
 
-// File-based helpers (local dev)
-function loadSubmissionsFile() {
-  if (!fs.existsSync(SUBMISSIONS_FILE)) return [];
-  return JSON.parse(fs.readFileSync(SUBMISSIONS_FILE, 'utf-8'));
+// File helpers
+function readJson(file, fallback) {
+  const fp = path.join(dataDir, file);
+  if (!fs.existsSync(fp)) return fallback;
+  return JSON.parse(fs.readFileSync(fp, 'utf-8'));
 }
-function saveSubmissionsFile(data) {
+function writeJson(file, data) {
   if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
-  fs.writeFileSync(SUBMISSIONS_FILE, JSON.stringify(data, null, 2));
-}
-function loadDetailsFile() {
-  if (!fs.existsSync(DETAILS_FILE)) return { name: '', email: config.email, phone: config.phone };
-  return JSON.parse(fs.readFileSync(DETAILS_FILE, 'utf-8'));
-}
-function saveDetailsFile(data) {
-  if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
-  fs.writeFileSync(DETAILS_FILE, JSON.stringify(data, null, 2));
-}
-function loadDiscountsFile() {
-  if (!fs.existsSync(DISCOUNTS_FILE)) return {};
-  return JSON.parse(fs.readFileSync(DISCOUNTS_FILE, 'utf-8'));
-}
-function saveDiscountsFile(data) {
-  if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
-  fs.writeFileSync(DISCOUNTS_FILE, JSON.stringify(data, null, 2));
+  fs.writeFileSync(path.join(dataDir, file), JSON.stringify(data, null, 2));
 }
 
-// Login page
+// --- PAGE ROUTES ---
 router.get('/', (req, res) => {
   const token = req.cookies?.token;
   if (token) {
-    try {
-      jwt.verify(token, config.jwtSecret);
-      return res.redirect('/admin/dashboard');
-    } catch {}
+    try { jwt.verify(token, config.jwtSecret); return res.redirect('/admin/dashboard'); } catch {}
   }
   res.sendFile(path.join(__dirname, '../../frontend/admin/login.html'));
 });
 
-// Login POST
 router.post('/login', (req, res) => {
   const { email, password } = req.body;
   if (email === config.admin.email && password === config.admin.password) {
@@ -62,122 +40,181 @@ router.post('/login', (req, res) => {
   res.status(401).json({ error: 'Invalid credentials' });
 });
 
-// Dashboard page
 router.get('/dashboard', auth, (req, res) => {
   res.sendFile(path.join(__dirname, '../../frontend/admin/dashboard.html'));
 });
+router.get('/submissions', auth, (req, res) => {
+  res.sendFile(path.join(__dirname, '../../frontend/admin/submissions.html'));
+});
+router.get('/submissions/:id', auth, (req, res) => {
+  res.sendFile(path.join(__dirname, '../../frontend/admin/submission-detail.html'));
+});
+router.get('/customers', auth, (req, res) => {
+  res.sendFile(path.join(__dirname, '../../frontend/admin/customers.html'));
+});
+router.get('/customers/:id', auth, (req, res) => {
+  res.sendFile(path.join(__dirname, '../../frontend/admin/customer-detail.html'));
+});
+router.get('/settings', auth, (req, res) => {
+  res.sendFile(path.join(__dirname, '../../frontend/admin/settings.html'));
+});
+router.get('/logout', (req, res) => {
+  res.clearCookie('token');
+  res.redirect('/admin');
+});
 
-// API: Get all submissions
+// --- SUBMISSIONS API ---
 router.get('/api/submissions', auth, async (req, res) => {
   if (isVercel) {
     const db = await getDb();
-    if (db) {
-      const submissions = await db.collection('submissions').find().toArray();
-      return res.json(submissions);
-    }
+    if (db) return res.json(await db.collection('submissions').find().toArray());
   }
-  res.json(loadSubmissionsFile());
+  res.json(readJson('submissions.json', []));
 });
 
-// API: Update a submission
 router.put('/api/submissions/:index', auth, async (req, res) => {
   if (isVercel) {
     const db = await getDb();
     if (db) {
-      const submissions = await db.collection('submissions').find().toArray();
+      const all = await db.collection('submissions').find().toArray();
       const idx = parseInt(req.params.index);
-      if (idx < 0 || idx >= submissions.length) return res.status(404).json({ error: 'Not found' });
-      const updated = { ...submissions[idx], ...req.body, updatedAt: new Date().toISOString() };
+      if (idx < 0 || idx >= all.length) return res.status(404).json({ error: 'Not found' });
+      const updated = { ...all[idx], ...req.body, updatedAt: new Date().toISOString() };
       delete updated._id;
-      await db.collection('submissions').replaceOne({ _id: submissions[idx]._id }, updated);
+      await db.collection('submissions').replaceOne({ _id: all[idx]._id }, updated);
       return res.json({ success: true, data: updated });
     }
   }
-  const submissions = loadSubmissionsFile();
+  const all = readJson('submissions.json', []);
   const idx = parseInt(req.params.index);
-  if (idx < 0 || idx >= submissions.length) return res.status(404).json({ error: 'Not found' });
-  submissions[idx] = { ...submissions[idx], ...req.body, updatedAt: new Date().toISOString() };
-  saveSubmissionsFile(submissions);
-  res.json({ success: true, data: submissions[idx] });
+  if (idx < 0 || idx >= all.length) return res.status(404).json({ error: 'Not found' });
+  all[idx] = { ...all[idx], ...req.body, updatedAt: new Date().toISOString() };
+  writeJson('submissions.json', all);
+  res.json({ success: true, data: all[idx] });
 });
 
-// API: Delete a submission
 router.delete('/api/submissions/:index', auth, async (req, res) => {
   if (isVercel) {
     const db = await getDb();
     if (db) {
-      const submissions = await db.collection('submissions').find().toArray();
+      const all = await db.collection('submissions').find().toArray();
       const idx = parseInt(req.params.index);
-      if (idx < 0 || idx >= submissions.length) return res.status(404).json({ error: 'Not found' });
-      await db.collection('submissions').deleteOne({ _id: submissions[idx]._id });
+      if (idx < 0 || idx >= all.length) return res.status(404).json({ error: 'Not found' });
+      await db.collection('submissions').deleteOne({ _id: all[idx]._id });
       return res.json({ success: true });
     }
   }
-  const submissions = loadSubmissionsFile();
+  const all = readJson('submissions.json', []);
   const idx = parseInt(req.params.index);
-  if (idx < 0 || idx >= submissions.length) return res.status(404).json({ error: 'Not found' });
-  submissions.splice(idx, 1);
-  saveSubmissionsFile(submissions);
+  if (idx < 0 || idx >= all.length) return res.status(404).json({ error: 'Not found' });
+  all.splice(idx, 1);
+  writeJson('submissions.json', all);
   res.json({ success: true });
 });
 
-// API: Get site details
+// --- CUSTOMERS API ---
+router.get('/api/customers', auth, async (req, res) => {
+  if (isVercel) {
+    const db = await getDb();
+    if (db) return res.json(await db.collection('customers').find().toArray());
+  }
+  res.json(readJson('customers.json', []));
+});
+
+router.post('/api/customers', auth, async (req, res) => {
+  const customer = { ...req.body, convertedAt: req.body.convertedAt || new Date().toISOString(), remarks: req.body.remarks || [], purchases: req.body.purchases || [] };
+  if (isVercel) {
+    const db = await getDb();
+    if (db) { await db.collection('customers').insertOne(customer); return res.json({ success: true, data: customer }); }
+  }
+  const all = readJson('customers.json', []);
+  all.push(customer);
+  writeJson('customers.json', all);
+  res.json({ success: true, data: customer });
+});
+
+router.put('/api/customers/:index', auth, async (req, res) => {
+  if (isVercel) {
+    const db = await getDb();
+    if (db) {
+      const all = await db.collection('customers').find().toArray();
+      const idx = parseInt(req.params.index);
+      if (idx < 0 || idx >= all.length) return res.status(404).json({ error: 'Not found' });
+      const updated = { ...all[idx], ...req.body, updatedAt: new Date().toISOString() };
+      delete updated._id;
+      await db.collection('customers').replaceOne({ _id: all[idx]._id }, updated);
+      return res.json({ success: true, data: updated });
+    }
+  }
+  const all = readJson('customers.json', []);
+  const idx = parseInt(req.params.index);
+  if (idx < 0 || idx >= all.length) return res.status(404).json({ error: 'Not found' });
+  all[idx] = { ...all[idx], ...req.body, updatedAt: new Date().toISOString() };
+  writeJson('customers.json', all);
+  res.json({ success: true, data: all[idx] });
+});
+
+router.delete('/api/customers/:index', auth, async (req, res) => {
+  if (isVercel) {
+    const db = await getDb();
+    if (db) {
+      const all = await db.collection('customers').find().toArray();
+      const idx = parseInt(req.params.index);
+      if (idx < 0 || idx >= all.length) return res.status(404).json({ error: 'Not found' });
+      await db.collection('customers').deleteOne({ _id: all[idx]._id });
+      return res.json({ success: true });
+    }
+  }
+  const all = readJson('customers.json', []);
+  const idx = parseInt(req.params.index);
+  if (idx < 0 || idx >= all.length) return res.status(404).json({ error: 'Not found' });
+  all.splice(idx, 1);
+  writeJson('customers.json', all);
+  res.json({ success: true });
+});
+
+// --- SETTINGS API ---
 router.get('/api/details', auth, async (req, res) => {
   if (isVercel) {
     const db = await getDb();
     if (db) {
-      const details = await db.collection('settings').findOne({ type: 'details' });
-      return res.json(details || { name: '', email: config.email, phone: config.phone });
+      const d = await db.collection('settings').findOne({ type: 'details' });
+      return res.json(d || { name: '', email: config.email, phone: config.phone });
     }
   }
-  res.json(loadDetailsFile());
+  res.json(readJson('details.json', { name: '', email: config.email, phone: config.phone }));
 });
 
-// API: Update site details
 router.put('/api/details', auth, async (req, res) => {
   const { name, email, phone } = req.body;
   const details = { name: name || '', email: email || '', phone: phone || '' };
   if (isVercel) {
     const db = await getDb();
-    if (db) {
-      await db.collection('settings').updateOne({ type: 'details' }, { $set: { ...details, type: 'details' } }, { upsert: true });
-      return res.json({ success: true, data: details });
-    }
+    if (db) { await db.collection('settings').updateOne({ type: 'details' }, { $set: { ...details, type: 'details' } }, { upsert: true }); return res.json({ success: true, data: details }); }
   }
-  saveDetailsFile(details);
+  writeJson('details.json', details);
   res.json({ success: true, data: details });
 });
 
-// API: Get discounts
 router.get('/api/discounts', auth, async (req, res) => {
   if (isVercel) {
     const db = await getDb();
     if (db) {
-      const discounts = await db.collection('settings').findOne({ type: 'discounts' });
-      if (discounts) { delete discounts._id; delete discounts.type; }
-      return res.json(discounts || {});
+      const d = await db.collection('settings').findOne({ type: 'discounts' });
+      if (d) { delete d._id; delete d.type; }
+      return res.json(d || {});
     }
   }
-  res.json(loadDiscountsFile());
+  res.json(readJson('discounts.json', {}));
 });
 
-// API: Update discounts
 router.put('/api/discounts', auth, async (req, res) => {
   if (isVercel) {
     const db = await getDb();
-    if (db) {
-      await db.collection('settings').updateOne({ type: 'discounts' }, { $set: { ...req.body, type: 'discounts' } }, { upsert: true });
-      return res.json({ success: true, data: req.body });
-    }
+    if (db) { await db.collection('settings').updateOne({ type: 'discounts' }, { $set: { ...req.body, type: 'discounts' } }, { upsert: true }); return res.json({ success: true, data: req.body }); }
   }
-  saveDiscountsFile(req.body);
+  writeJson('discounts.json', req.body);
   res.json({ success: true, data: req.body });
-});
-
-// Logout
-router.get('/logout', (req, res) => {
-  res.clearCookie('token');
-  res.redirect('/admin');
 });
 
 module.exports = router;

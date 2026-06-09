@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customer Detail | Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/admin/css/admin.css">
+</head>
+<body>
+  <nav class="admin-nav">
+    <h1>Management<span>Systems</span> — Admin</h1>
+    <div class="admin-nav-right">
+      <a href="/admin/dashboard" class="nav-link">Dashboard</a>
+      <a href="/admin/submissions" class="nav-link">Submissions</a>
+      <a href="/admin/customers" class="nav-link active">Customers</a>
+      <a href="/admin/settings" class="nav-link">Settings</a>
+      <a href="/admin/logout" class="btn-logout">Logout</a>
+    </div>
+  </nav>
+
+  <div class="detail-page">
+    <a href="/admin/customers" class="back-link">← Back to Customers</a>
+
+    <div class="detail-header">
+      <h1 id="detailName">Loading...</h1>
+      <div class="detail-actions">
+        <button class="btn btn-danger btn-sm" onclick="deleteCustomer()">🗑 Delete</button>
+      </div>
+    </div>
+
+    <div class="info-grid" id="infoGrid"></div>
+
+    <!-- Purchases Section -->
+    <div class="purchases-section">
+      <h3>💰 Purchases</h3>
+      <div id="purchasesList"></div>
+      <div class="add-purchase">
+        <input type="text" id="purchaseDesc" placeholder="Description (e.g. Starter Website)">
+        <input type="number" id="purchaseAmount" placeholder="Amount (₹)">
+        <button class="btn btn-primary btn-sm" onclick="addPurchase()">Add</button>
+      </div>
+    </div>
+
+    <!-- Remarks Section -->
+    <div class="remarks-section">
+      <h3>📝 Remarks & Activity</h3>
+      <div id="remarksList"></div>
+      <div class="remark-input">
+        <input type="text" id="remarkInput" placeholder="Add a remark..." onkeypress="if(event.key==='Enter')addRemark()">
+        <button class="btn btn-primary btn-sm" onclick="addRemark()">Add</button>
+      </div>
+    </div>
+
+    <div style="margin-top:32px;">
+      <button class="btn btn-primary" onclick="saveChanges()">💾 Save Changes</button>
+    </div>
+  </div>
+
+  <div class="notification" id="notification"></div>
+
+  <script>
+    const idx = parseInt(window.location.pathname.split('/').pop());
+    let customer = null;
+
+    async function load() {
+      const res = await fetch('/admin/api/customers');
+      if (res.redirected) { window.location.href = '/admin'; return; }
+      const customers = await res.json();
+      customer = customers[idx];
+      if (!customer) { window.location.href = '/admin/customers'; return; }
+      render();
+    }
+
+    function render() {
+      document.getElementById('detailName').textContent = customer.name;
+      document.title = `${customer.name} | Customer`;
+
+      const totalSpent = (customer.purchases || []).reduce((s, p) => s + (p.amount || 0), 0);
+
+      document.getElementById('infoGrid').innerHTML = `
+        <div class="info-item">
+          <label>Name</label>
+          <input type="text" id="editName" value="${customer.name}">
+        </div>
+        <div class="info-item">
+          <label>Email</label>
+          <input type="email" id="editEmail" value="${customer.email || ''}">
+        </div>
+        <div class="info-item">
+          <label>Phone</label>
+          <input type="tel" id="editPhone" value="${customer.phone || ''}">
+        </div>
+        <div class="info-item">
+          <label>Service</label>
+          <input type="text" id="editService" value="${customer.service || ''}">
+        </div>
+        <div class="info-item">
+          <label>Customer Since</label>
+          <div class="value">${customer.convertedAt ? new Date(customer.convertedAt).toLocaleDateString() : 'Unknown'}</div>
+        </div>
+        <div class="info-item">
+          <label>Total Spent</label>
+          <div class="value" style="color:#1D9E75;font-weight:600;">₹${totalSpent.toLocaleString('en-IN')}</div>
+        </div>
+      `;
+
+      renderPurchases();
+      renderRemarks();
+    }
+
+    function renderPurchases() {
+      const list = document.getElementById('purchasesList');
+      const purchases = customer.purchases || [];
+      if (!purchases.length) {
+        list.innerHTML = '<p style="color:#A8B8D0;font-size:0.85rem;padding:12px 0;">No purchases recorded.</p>';
+        return;
+      }
+      list.innerHTML = purchases.map((p, i) => `
+        <div class="purchase-item">
+          <div class="purchase-item-left">
+            <strong>${p.description}</strong>
+            <span>${new Date(p.date).toLocaleDateString()}</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span class="purchase-amount">₹${(p.amount || 0).toLocaleString('en-IN')}</span>
+            <button class="btn btn-danger btn-sm" onclick="removePurchase(${i})" style="padding:4px 8px;font-size:0.7rem;">✕</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderRemarks() {
+      const list = document.getElementById('remarksList');
+      const remarks = customer.remarks || [];
+      if (!remarks.length) {
+        list.innerHTML = '<p style="color:#A8B8D0;font-size:0.85rem;padding:12px 0;">No remarks yet.</p>';
+        return;
+      }
+      list.innerHTML = remarks.map(r => `
+        <div class="remark-item">
+          <div class="remark-text">${r.text}</div>
+          <div class="remark-time">${new Date(r.timestamp).toLocaleString()}</div>
+        </div>
+      `).join('');
+    }
+
+    async function addPurchase() {
+      const desc = document.getElementById('purchaseDesc').value.trim();
+      const amount = parseInt(document.getElementById('purchaseAmount').value) || 0;
+      if (!desc) return;
+      if (!customer.purchases) customer.purchases = [];
+      customer.purchases.push({ description: desc, amount, date: new Date().toISOString() });
+      document.getElementById('purchaseDesc').value = '';
+      document.getElementById('purchaseAmount').value = '';
+      await saveToServer({ purchases: customer.purchases });
+      render();
+      notify('Purchase added');
+    }
+
+    async function removePurchase(i) {
+      customer.purchases.splice(i, 1);
+      await saveToServer({ purchases: customer.purchases });
+      render();
+      notify('Purchase removed');
+    }
+
+    async function addRemark() {
+      const input = document.getElementById('remarkInput');
+      const text = input.value.trim();
+      if (!text) return;
+      if (!customer.remarks) customer.remarks = [];
+      customer.remarks.push({ text, timestamp: new Date().toISOString() });
+      input.value = '';
+      await saveToServer({ remarks: customer.remarks });
+      renderRemarks();
+      notify('Remark added');
+    }
+
+    async function saveChanges() {
+      const data = {
+        name: document.getElementById('editName').value,
+        email: document.getElementById('editEmail').value,
+        phone: document.getElementById('editPhone').value,
+        service: document.getElementById('editService').value
+      };
+      await saveToServer(data);
+      Object.assign(customer, data);
+      document.getElementById('detailName').textContent = data.name;
+      notify('Changes saved');
+    }
+
+    async function deleteCustomer() {
+      if (!confirm('Permanently delete this customer?')) return;
+      await fetch(`/admin/api/customers/${idx}`, { method: 'DELETE' });
+      window.location.href = '/admin/customers';
+    }
+
+    async function saveToServer(data) {
+      await fetch(`/admin/api/customers/${idx}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+    }
+
+    function notify(msg) {
+      const el = document.getElementById('notification');
+      el.textContent = msg;
+      el.style.display = 'block';
+      setTimeout(() => el.style.display = 'none', 3000);
+    }
+
+    load();
+  </script>
+</body>
+</html>

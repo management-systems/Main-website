@@ -16,6 +16,10 @@
       "dest": "backend/server.js"
     },
     {
+      "src": "/admin/css/(.*)",
+      "dest": "frontend/admin/css/$1"
+    },
+    {
       "src": "/admin/(.*)",
       "dest": "backend/server.js"
     },

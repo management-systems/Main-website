@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Submissions | Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/admin/css/admin.css">
+</head>
+<body>
+  <nav class="admin-nav">
+    <h1>Management<span>Systems</span> — Admin</h1>
+    <div class="admin-nav-right">
+      <a href="/admin/dashboard" class="nav-link">Dashboard</a>
+      <a href="/admin/submissions" class="nav-link active">Submissions</a>
+      <a href="/admin/customers" class="nav-link">Customers</a>
+      <a href="/admin/settings" class="nav-link">Settings</a>
+      <a href="/admin/logout" class="btn-logout">Logout</a>
+    </div>
+  </nav>
+
+  <div class="dashboard">
+    <div class="section-header">
+      <h2>📩 Contact Submissions</h2>
+      <div class="filter-bar">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="new">New</button>
+        <button class="filter-btn" data-filter="contacted">Contacted</button>
+        <button class="filter-btn" data-filter="closed">Closed</button>
+      </div>
+    </div>
+    <div class="submissions-list" id="submissionsList"></div>
+  </div>
+
+  <script>
+    let submissions = [];
+    let currentFilter = 'all';
+
+    async function load() {
+      const res = await fetch('/admin/api/submissions');
+      if (res.redirected) { window.location.href = '/admin'; return; }
+      submissions = await res.json();
+      render();
+    }
+
+    function render() {
+      const list = document.getElementById('submissionsList');
+      let filtered = [...submissions].reverse();
+      if (currentFilter !== 'all') {
+        filtered = filtered.filter(s => (s.status || 'new') === currentFilter);
+      }
+      if (!filtered.length) {
+        list.innerHTML = '<div class="empty-state"><h3>No submissions found</h3><p>Submissions will appear here when someone fills the contact form.</p></div>';
+        return;
+      }
+      list.innerHTML = filtered.map(s => {
+        const idx = submissions.indexOf(s);
+        const status = s.status || 'new';
+        const date = s.submittedAt ? new Date(s.submittedAt).toLocaleString() : 'Unknown';
+        return `
+          <a href="/admin/submissions/${idx}" class="submission-card">
+            <div class="submission-top">
+              <span class="submission-name">${s.name}</span>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <span class="status-badge status-${status}">${status.toUpperCase()}</span>
+                <span class="submission-date">${date}</span>
+              </div>
+            </div>
+            <div class="submission-meta">
+              <span>📧 <strong>${s.email}</strong></span>
+              <span>📞 <strong>${s.phone || 'N/A'}</strong></span>
+              <span>🏷️ <strong>${s.service || 'General'}</strong></span>
+              ${s.remarks?.length ? `<span>💬 ${s.remarks.length} remarks</span>` : ''}
+            </div>
+          </a>`;
+      }).join('');
+    }
+
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.dataset.filter;
+        render();
+      });
+    });
+
+    load();
+  </script>
+</body>
+</html>

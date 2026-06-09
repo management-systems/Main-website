@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customers | Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/admin/css/admin.css">
+</head>
+<body>
+  <nav class="admin-nav">
+    <h1>Management<span>Systems</span> — Admin</h1>
+    <div class="admin-nav-right">
+      <a href="/admin/dashboard" class="nav-link">Dashboard</a>
+      <a href="/admin/submissions" class="nav-link">Submissions</a>
+      <a href="/admin/customers" class="nav-link active">Customers</a>
+      <a href="/admin/settings" class="nav-link">Settings</a>
+      <a href="/admin/logout" class="btn-logout">Logout</a>
+    </div>
+  </nav>
+
+  <div class="dashboard">
+    <div class="section-header">
+      <h2>👥 Customers</h2>
+      <button class="btn btn-primary btn-sm" onclick="showAddCustomer()">+ Add Customer</button>
+    </div>
+
+    <div id="addCustomerForm" style="display:none;margin-bottom:24px;" class="card">
+      <h3 style="color:#fff;margin-bottom:16px;">Add New Customer</h3>
+      <div class="info-grid">
+        <div class="form-group"><label>Name</label><input type="text" id="newCustName" placeholder="Customer Name"></div>
+        <div class="form-group"><label>Email</label><input type="email" id="newCustEmail" placeholder="Email"></div>
+        <div class="form-group"><label>Phone</label><input type="tel" id="newCustPhone" placeholder="Phone"></div>
+        <div class="form-group"><label>Service</label><input type="text" id="newCustService" placeholder="Service purchased"></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:12px;">
+        <button class="btn btn-primary" onclick="addCustomer()">Save Customer</button>
+        <button class="btn btn-danger btn-sm" onclick="hideAddCustomer()">Cancel</button>
+      </div>
+    </div>
+
+    <div class="submissions-list" id="customersList"></div>
+  </div>
+
+  <script>
+    let customers = [];
+
+    async function load() {
+      const res = await fetch('/admin/api/customers');
+      if (res.redirected) { window.location.href = '/admin'; return; }
+      customers = res.ok ? await res.json() : [];
+      render();
+    }
+
+    function render() {
+      const list = document.getElementById('customersList');
+      if (!customers.length) {
+        list.innerHTML = '<div class="empty-state"><h3>No customers yet</h3><p>Convert submissions to customers or add manually.</p></div>';
+        return;
+      }
+      list.innerHTML = [...customers].reverse().map(c => {
+        const idx = customers.indexOf(c);
+        const totalPurchases = (c.purchases || []).reduce((sum, p) => sum + (p.amount || 0), 0);
+        return `
+          <a href="/admin/customers/${idx}" class="submission-card">
+            <div class="submission-top">
+              <span class="submission-name">${c.name}</span>
+              <span class="submission-date">${c.convertedAt ? new Date(c.convertedAt).toLocaleDateString() : ''}</span>
+            </div>
+            <div class="submission-meta">
+              <span>📧 <strong>${c.email}</strong></span>
+              <span>📞 <strong>${c.phone || 'N/A'}</strong></span>
+              <span>🏷️ <strong>${c.service || 'N/A'}</strong></span>
+              ${totalPurchases ? `<span>💰 <strong>₹${totalPurchases.toLocaleString('en-IN')}</strong></span>` : ''}
+              ${c.remarks?.length ? `<span>💬 ${c.remarks.length} remarks</span>` : ''}
+            </div>
+          </a>`;
+      }).join('');
+    }
+
+    function showAddCustomer() { document.getElementById('addCustomerForm').style.display = 'block'; }
+    function hideAddCustomer() { document.getElementById('addCustomerForm').style.display = 'none'; }
+
+    async function addCustomer() {
+      const data = {
+        name: document.getElementById('newCustName').value,
+        email: document.getElementById('newCustEmail').value,
+        phone: document.getElementById('newCustPhone').value,
+        service: document.getElementById('newCustService').value,
+        convertedAt: new Date().toISOString(),
+        remarks: [],
+        purchases: []
+      };
+      if (!data.name) return alert('Name is required');
+      const res = await fetch('/admin/api/customers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      if (res.ok) { hideAddCustomer(); load(); }
+    }
+
+    load();
+  </script>
+</body>
+</html>
