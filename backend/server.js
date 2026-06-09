@@ -23,10 +23,18 @@ app.use('/api/contact', contactRoutes);
 app.use('/admin', adminRoutes);
 
 // Public API: site details
-app.get('/api/details', (req, res) => {
+app.get('/api/details', async (req, res) => {
+  const isVercel = process.env.VERCEL === '1';
+  if (isVercel) {
+    const { getDb } = require('./config/db');
+    const db = await getDb();
+    if (db) {
+      const details = await db.collection('settings').findOne({ type: 'details' });
+      return res.json(details || { name: '', email: config.email, phone: config.phone });
+    }
+  }
   const fs = require('fs');
   const detailsFile = path.join(__dirname, 'data/details.json');
-  const config = require('./config/app');
   if (fs.existsSync(detailsFile)) {
     return res.json(JSON.parse(fs.readFileSync(detailsFile, 'utf-8')));
   }
@@ -34,7 +42,17 @@ app.get('/api/details', (req, res) => {
 });
 
 // Public API: discounts
-app.get('/api/discounts', (req, res) => {
+app.get('/api/discounts', async (req, res) => {
+  const isVercel = process.env.VERCEL === '1';
+  if (isVercel) {
+    const { getDb } = require('./config/db');
+    const db = await getDb();
+    if (db) {
+      const discounts = await db.collection('settings').findOne({ type: 'discounts' });
+      if (discounts) { delete discounts._id; delete discounts.type; }
+      return res.json(discounts || {});
+    }
+  }
   const fs = require('fs');
   const discountsFile = path.join(__dirname, 'data/discounts.json');
   if (fs.existsSync(discountsFile)) {

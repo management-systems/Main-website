@@ -2,31 +2,27 @@ const fs = require('fs');
 const path = require('path');
 const nodemailer = require('nodemailer');
 const config = require('../config/app');
+const { getDb } = require('../config/db');
 
-// Use /tmp on Vercel (serverless), local dir otherwise
 const isVercel = process.env.VERCEL === '1';
-const dataDir = isVercel ? '/tmp' : path.join(__dirname, '../data');
+const dataDir = path.join(__dirname, '../data');
 const SUBMISSIONS_FILE = path.join(dataDir, 'submissions.json');
 
-// Ensure data directory exists (only for non-Vercel)
 if (!isVercel && !fs.existsSync(dataDir)) {
   fs.mkdirSync(dataDir, { recursive: true });
 }
 
-// Load existing submissions
-function getSubmissions() {
+// File-based helpers (local dev)
+function getSubmissionsFromFile() {
   try {
     if (!fs.existsSync(SUBMISSIONS_FILE)) return [];
     return JSON.parse(fs.readFileSync(SUBMISSIONS_FILE, 'utf-8'));
-  } catch {
-    return [];
-  }
+  } catch { return []; }
 }
 
-// Save submission
-function saveSubmission(entry) {
+function saveSubmissionToFile(entry) {
   try {
-    const submissions = getSubmissions();
+    const submissions = getSubmissionsFromFile();
     submissions.push(entry);
     fs.writeFileSync(SUBMISSIONS_FILE, JSON.stringify(submissions, null, 2));
   } catch (err) {
@@ -34,18 +30,33 @@ function saveSubmission(entry) {
   }
 }
 
+// Universal helpers
+async function getSubmissions() {
+  if (isVercel) {
+    const db = await getDb();
+    if (db) return await db.collection('submissions').find().toArray();
+    return [];
+  }
+  return getSubmissionsFromFile();
+}
+
+async function saveSubmission(entry) {
+  if (isVercel) {
+    const db = await getDb();
+    if (db) await db.collection('submissions').insertOne(entry);
+    return;
+  }
+  saveSubmissionToFile(entry);
+}
+
 // Email transporter
 const transporter = nodemailer.createTransport({
   host: config.smtp.host,
   port: config.smtp.port,
   secure: config.smtp.secure,
-  auth: {
-    user: config.smtp.user,
-    pass: config.smtp.pass
-  }
+  auth: { user: config.smtp.user, pass: config.smtp.pass }
 });
 
-// Send email notification
 async function sendEmail(data) {
   const mailOptions = {
     from: `"Management Systems" <${config.smtp.user}>`,
@@ -63,7 +74,6 @@ async function sendEmail(data) {
       <p style="margin-top:16px;color:#666;">Submitted at: ${data.submittedAt}</p>
     `
   };
-
   await transporter.sendMail(mailOptions);
 }
 
@@ -79,7 +89,7 @@ exports.submitContact = async (req, res) => {
     return res.status(400).json({ error: 'Invalid email address.' });
   }
 
-  const submissions = getSubmissions();
+  const submissions = await getSubmissions();
   const isDuplicate = submissions.some(s =>
     s.name === name && s.email === email && s.phone === (phone || '') && s.service === (service || '') && s.message === message
   );
@@ -87,23 +97,17 @@ exports.submitContact = async (req, res) => {
     return res.status(409).json({ error: 'You have already submitted this exact inquiry. Please modify your message to submit again.' });
   }
 
-  const entry = { name, email, phone: phone || '', service: service || '', message, submittedAt: new Date().toISOString() };
+  const entry = { name, email, phone: phone || '', service: service || '', message, submittedAt: new Date().toISOString(), status: 'new' };
 
-  // Save to file
-  saveSubmission(entry);
+  await saveSubmission(entry);
 
-  // Send email
-  try {
-    await sendEmail(entry);
-  } catch (err) {
-    console.error('Email send failed:', err.message);
-  }
+  try { await sendEmail(entry); }
+  catch (err) { console.error('Email send failed:', err.message); }
 
   res.status(200).json({ success: true, message: 'Thank you! We will get back to you shortly.' });
 };
 
-// View all submissions (admin endpoint)
-exports.getSubmissions = (req, res) => {
-  const submissions = getSubmissions();
+exports.getSubmissions = async (req, res) => {
+  const submissions = await getSubmissions();
   res.json(submissions);
 };
