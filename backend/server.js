@@ -61,6 +61,14 @@ app.get('/api/discounts', async (req, res) => {
   res.json({});
 });
 
+// Page routes
+const pages = ['services', 'pricing', 'portfolio', 'contact'];
+pages.forEach(page => {
+  app.get(`/${page}`, (req, res) => {
+    res.sendFile(path.join(__dirname, `../frontend/${page}.html`));
+  });
+});
+
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../frontend/index.html'));
 });

@@ -1,7 +1,11 @@
 .footer {
-  background: rgba(12,31,63,0.8);
+  background: var(--bg-card);
   border-top: 1px solid rgba(255,255,255,0.06);
   padding: 60px 0 24px;
+}
+
+[data-theme="light"] .footer {
+  border-top-color: rgba(0,0,0,0.08);
 }
 
 .footer-grid {
@@ -62,6 +66,10 @@
   align-items: center;
   font-size: 0.8rem;
   color: var(--color-gray);
+}
+
+[data-theme="light"] .footer-bottom {
+  border-top-color: rgba(0,0,0,0.08);
 }
 
 @media (max-width: 768px) {

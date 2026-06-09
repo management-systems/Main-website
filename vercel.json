@@ -28,6 +28,22 @@
       "dest": "backend/server.js"
     },
     {
+      "src": "/services",
+      "dest": "frontend/services.html"
+    },
+    {
+      "src": "/pricing",
+      "dest": "frontend/pricing.html"
+    },
+    {
+      "src": "/portfolio",
+      "dest": "frontend/portfolio.html"
+    },
+    {
+      "src": "/contact",
+      "dest": "frontend/contact.html"
+    },
+    {
       "src": "/(.*\\.(js|css|svg|png|ico|jpg|jpeg|gif|woff2?))",
       "dest": "frontend/$1"
     },
